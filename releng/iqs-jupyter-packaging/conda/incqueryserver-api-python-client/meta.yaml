@@ -1,0 +1,37 @@
+package:
+  name: incqueryserver-api-python-client 
+  version: "0.10.0"
+
+source:
+  path: ../../../../source-gen/incqueryserver-api-python-client
+  
+  
+build:
+  noarch: python
+    
+  
+requirements:
+  build:
+    - python
+    - setuptools
+    - urllib3 >=1.15
+    - six >=1.10
+    - certifi
+    - python-dateutil
+
+  run:
+    - python
+    - urllib3 >=1.15
+    - six >=1.10
+    - certifi
+    - python-dateutil
+
+test:
+  imports:
+    - iqs_client
+
+about:
+  home: https://incquery.io
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  summary: IncQuery Server for Teamwork Cloud Web API
+  
