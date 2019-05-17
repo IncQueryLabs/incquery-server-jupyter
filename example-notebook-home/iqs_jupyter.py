@@ -155,10 +155,11 @@ def _cell_to_html(cell):
 
 def _monkey_patch_query_execution_response_to_html(self):
     import html
-    count_report = '<span title="{}">{} match(es) of query {}<i>(see hover for details)</i></span>'.format(
+    count_report = '<span title="{}">{} match(es) of query{}{} <i>(see hover for details)</i></span>'.format(
         html.escape(self.to_str()), 
         html.escape(str(self.match_set_size)),
-        "with bound parameter(s) '{}' ".format(", ".join([html.escape(binding.parameter) for binding in self.binding])) if self.binding else ""
+        " '{}'".format(html.escape(self.query_fqn)) if self.query_fqn else "",
+        " with bound parameter(s) '{}'".format(", ".join([html.escape(binding.parameter) for binding in self.binding])) if self.binding else ""
     )
     match_list = self.to_list_of_matches()
     
