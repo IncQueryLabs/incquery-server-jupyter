@@ -233,8 +233,16 @@ iqs_client.IndexMessage._repr_html_ = _monkey_patch_generic_response_message_rep
 iqs_client.SimpleMessage._repr_html_ = _monkey_patch_generic_response_message_repr_html_
 iqs_client.QueryFQNList._repr_html_ = _monkey_patch_query_fqn_list_repr_html_
 
-## useful widgets and clients
+## global utility functions
 
+def binding(**kwargs):
+    return [
+        {"parameter": param_name, "value": param_value} 
+        for param_name, param_value in kwargs.items()
+    ]
+
+
+## useful widgets and clients
 
 class IQSConnectorWidget:
     def __init__(
