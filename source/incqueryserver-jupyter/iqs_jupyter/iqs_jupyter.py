@@ -25,6 +25,9 @@ import iqs_client
 ## TODO separate TWC-specific, MMS-specific and core parts into separate files if possible (re-export of core?)
 ## TODO refactor: pull up TWC-independent parts of (a) revision selector widget (retrofit mms commit selector) and (b) OSMC element info widget
 
+# defaults section
+
+import iqs_jupyter.config_defaults as defaults
 
 ## monkey patch section
 
@@ -246,19 +249,47 @@ def binding(**kwargs):
         for param_name, param_value in kwargs.items()
     ]
 
+def connect(
+    address  = defaults.default_IQS_address,
+    user     = defaults.default_IQS_username,
+    password = defaults.default_IQS_password,
+    auth_with_user_pw  = True    
+):
+    configuration = iqs_client.Configuration()
+    configuration.host=address 
+    if auth_with_user_pw:
+        configuration.username=user
+        configuration.password=password
+    return IQSClient(configuration)
+
 
 ## useful widgets and clients
 
 class IQSConnectorWidget:
     def __init__(
         self,
-        defaultValue='127.0.0.1:47700/api',
-        fieldLabel='Address:',
+        ask_for_user_pw  = True,
+        initial_address  = defaults.default_IQS_address,
+        initial_user     = defaults.default_IQS_username,
+        initial_password = defaults.default_IQS_password,
+        address_label    = 'Address:',
+        user_label       = 'User:',
+        password_label   = 'Password:',
         labelText="IQS API Access Point",
         auto_display=True
     ):
-        self.address_field=widgets.Text(value=defaultValue, description=fieldLabel)
-        self.box=widgets.HBox([widgets.Label(value=labelText), self.address_field])
+        self.ask_for_user_pw = ask_for_user_pw
+        
+        self.address_field  = widgets.Text    (value=initial_address,  description=address_label)
+        self.user_field     = widgets.Text    (value=initial_user,     description=user_label)
+        self.password_field = widgets.Password(value=initial_password, description=password_label)
+        
+        if ask_for_user_pw:
+            fields = [self.address_field, self.user_field, self.password_field]
+        else:
+            fields = [self.address_field]
+        
+        self.box=widgets.HBox([widgets.Label(value=labelText), widgets.VBox(fields)])
         if auto_display: self.display()
             
     def display(self):
@@ -269,26 +300,34 @@ class IQSConnectorWidget:
         
     def api_client_configuration(self):
         configuration = iqs_client.Configuration()
-        configuration.host=self.address_field.value        
+        configuration.host=self.address_field.value 
+        if self.ask_for_user_pw:
+            configuration.username=self.user_field.value
+            configuration.password=self.password_field.value
         return configuration
     
     def connect(self):
-        return IQSClient(self.api_client_configuration())
+        return connect(
+            address           = self.address_field.value,
+            user              = self.user_field.value,
+            password          = self.password_field.value,
+            auth_with_user_pw = self.ask_for_user_pw
+        )
 
 
 class TWCRevisionInputWidget:
     def __init__(
         self,
-        defaultWorkspace='4d6ce495-1273-452c-a548-36fcd922184e',
-        defaultResource= '34cc77c8-d3ef-40a6-9b91-65786117fe67',
-        defaultBranch=   'bd03a239-7836-4d4c-9bcb-eba73b001b1e',
-        defaultRevision='1',
+        initial_workspace = defaults.default_twc_workspace,
+        initial_resource  = defaults.default_twc_resource,
+        initial_branch    = defaults.default_twc_branch,
+        initial_revision  = defaults.default_twc_revision,
         auto_display=True
     ):
-        self.workspace_widget = widgets.Text(value=defaultWorkspace,   description='ID:')
-        self.resource_widget  = widgets.Text(value=defaultResource,    description='ID:')
-        self.branch_widget    = widgets.Text(value=defaultBranch,      description='ID:')
-        self.revision_widget  = widgets.IntText(value=defaultRevision, description='Number:')
+        self.workspace_widget = widgets.Text(value=initial_workspace,   description='ID:')
+        self.resource_widget  = widgets.Text(value=initial_resource,    description='ID:')
+        self.branch_widget    = widgets.Text(value=initial_branch,      description='ID:')
+        self.revision_widget  = widgets.IntText(value=initial_revision, description='Number:')
         self.box=widgets.HBox([
             widgets.VBox([widgets.Label(value="Workspace"), widgets.Label(value="Resource"), widgets.Label(value="Branch"), widgets.Label(value="Revision")]),
             widgets.VBox([self.workspace_widget,            self.resource_widget,            self.branch_widget,            self.revision_widget])
@@ -315,10 +354,10 @@ class MMCCommitSelectorWidget:
     def __init__(
             self,
             iqs,
-            initial_org=None,
-            initial_project=None,
-            initial_ref=None,
-            initial_commit=None,
+            initial_org     = defaults.default_mms_org,
+            initial_project = defaults.default_mms_project,
+            initial_ref     = defaults.default_mms_ref,
+            initial_commit  = defaults.default_mms_commit,
             auto_display=True
     ):
         self.iqs = iqs
@@ -508,10 +547,10 @@ class TWCRevisionSelectorWidget:
     def __init__(
         self,
         iqs,
-        initial_workspace = None,
-        initial_resource  = None,
-        initial_branch    = None,
-        initial_revision  = None,
+        initial_workspace = defaults.default_twc_workspace,
+        initial_resource  = defaults.default_twc_resource,
+        initial_branch    = defaults.default_twc_branch,
+        initial_revision  = defaults.default_twc_revision,
         auto_display=True
     ):
         self.iqs = iqs
@@ -689,18 +728,18 @@ class TWCRevisionSelectorWidget:
 class OSMCConnectorWidget:
     def __init__(
         self,
-        default_address='https://twc.demo.iqs.beta.incquerylabs.com:8111/osmc',
-        default_user='iqs-demo',
-        default_pw='',
+        initial_address = defaults.default_twc_osmc_address,
+        initial_user    = defaults.default_twc_osmc_username,
+        initial_pw      = defaults.default_twc_osmc_password,
         address_label='Address:',
         user_label='User:',
         pw_label='Password:',
         label_text="OSMC API Access Point",
         auto_display=True
     ):
-        self.address_widget = widgets.Text    (value=default_address, description=address_label)
-        self.user_widget    = widgets.Text    (value=default_user,    description=user_label)
-        self.pw_widget      = widgets.Password(value=default_pw,      description=pw_label)
+        self.address_widget = widgets.Text    (value=initial_address, description=address_label)
+        self.user_widget    = widgets.Text    (value=initial_user,    description=user_label)
+        self.pw_widget      = widgets.Password(value=initial_pw,      description=pw_label)
         self.box=widgets.HBox([
             widgets.VBox([widgets.Label(value=label_text), widgets.Label(value=""), widgets.Label(value="")]),
             widgets.VBox([self.address_widget,             self.user_widget,        self.pw_widget])
@@ -745,7 +784,7 @@ class IQSJupyterTools:
     ):
         self.iqs = iqs
     
-    def revision_selector_widget(self, **kwargs):
+    def twc_revision_selector_widget(self, **kwargs):
         return TWCRevisionSelectorWidget(iqs=self.iqs, **kwargs)
 
     def mms_commit_selector_widget(self, **kwargs):

@@ -48,14 +48,17 @@ See details at: [jupyter.org](https://jupyter.org/install)
 
             connector = iqs_jupyter.IQSConnectorWidget()
 
-   1. Fill out the text field of the widget to specify the address to a running IQS server instance. It is possible to specify the initial content of the address field using the optional parameter `defaultValue='127.0.0.1:47700/api'`. If such a default value is given, it is possible to skip this step by not displaying the widget at all (pass `auto_display=False`).
-   1. Create the main client object `iqs`:
- 
+   1. Fill out the text field of the widget to specify the address to a running IQS server instance, then create the main client object `iqs`:
+
             iqs = connector.connect()
- 
+   
+      * To skip manual form filling, it is possible to specify the initial content of the widget fields using a number of ways. First, `IQSConnectorWidget` has the optional parameters `initial_address`, `initial_user`, `initial_password`. Second, if such parameters are not given, results may be automatically filled from environment variables (see below). If such default values are known, it is possible to skip this step and the previous one by not displaying a widget at all:
+      
+                iqs = iqs_jupyter.connect()
+       
    1. Browse for a TWC revision using 
    
-            revision_selector = iqs.jupyter_tools.revision_selector_widget()
+            revision_selector = iqs.jupyter_tools.twc_revision_selector_widget()
    
    1. Access the full JSON/RPC API of IQS in the form of (you may use TAB completion):
    
@@ -74,8 +77,44 @@ and then
 Specifying `install -e` will install these pip packages in "editable" mode, similarly to `conda develop`.
   
   
+## Specify default context in environment variables
+  
+Several functions and classes defined in client extension take optional arguments whose default values can be injected via environment variables. This allows the notebook itself to be much simpler, by omitting connection data etc. 
+
+Here is an example `start-jupyter.cmd` file you may wish to place into your notebook home, and use it to start jupyter with the right default values: 
+
+```cmd
+@echo off
+
+set IQS_JUPYTER_default_IQS_address=127.0.0.1:47700/api
+set IQS_JUPYTER_default_IQS_username=...
+set IQS_JUPYTER_default_IQS_password=...
+
+set IQS_JUPYTER_default_twc_workspace=4d6ce495-1273-452c-a548-36fcd922184e
+set IQS_JUPYTER_default_twc_resource=34cc77c8-d3ef-40a6-9b91-65786117fe67
+set IQS_JUPYTER_default_twc_branch=bd03a239-7836-4d4c-9bcb-eba73b001b1e
+set IQS_JUPYTER_default_twc_revision=1
+
+set IQS_JUPYTER_default_mms_org=6384a103-766c-46e0-830d-8a3b1f479479
+set IQS_JUPYTER_default_mms_project=PROJECT-bef4f459-5d90-41fb-bc86-4f6d4ebd2dfd
+set IQS_JUPYTER_default_mms_ref=master
+set IQS_JUPYTER_default_mms_commit=560d3959-3912-434a-a914-8d039d3c9a06
+
+set IQS_JUPYTER_default_twc_osmc_address=https://twc.demo.iqs.beta.incquerylabs.com:8111/osmc
+set IQS_JUPYTER_default_twc_osmc_username=...
+set IQS_JUPYTER_default_twc_osmc_password=...
+
+jupyter notebook
+```
+  
+Caution: beware of whitespace, make sure there is none before/after the `=`.
+A similar shell script can be used in case of *nix systems; a docker file might be another good way to provide environment variables. 
+  
+  
 ## Demo notes
 
 The demo notebook uses `ploty` and `cufflinks` to demonstrate possible applications of the client extensions package. It is not recommended to install `cufflinks-py` using conda, as conda-forge seems to host an obsolete version not compatible with the demo; simply issue `pip install cufflinks` from the Anaconda console instead. 
+
+
 
 
