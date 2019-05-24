@@ -55,10 +55,13 @@ for var_name, default in [ # copy to avoid concurrent modification
     from os import environ
     from typing import get_type_hints
     from sys import modules
-    value = environ.get(_prefix + var_name, default)
+    value = environ.get(_prefix + var_name)
     hint = get_type_hints(modules[__name__]).get(var_name)
-    if hint == int:
-        globals()[var_name] = int(value)
-    else:
-        globals()[var_name] = value
+    if value is None:
+        globals()[var_name] = default
+    else: 
+        if hint == int:
+            globals()[var_name] = int(value)
+        else:
+            globals()[var_name] = value
 
