@@ -12,11 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+'''
+Created on 2019-04-09
 
+@author: Gábor Bergmann
+'''
 
 import ipywidgets as widgets
+from IPython.display import display
 import iqs_client
-
 
 ## TODO separate TWC-specific, MMS-specific and core parts into separate files if possible (re-export of core?)
 ## TODO refactor: pull up TWC-independent parts of (a) revision selector widget (retrofit mms commit selector) and (b) OSMC element info widget
@@ -340,8 +344,8 @@ class MMCCommitSelectorWidget:
             elif (owner.disabled):
                 pass
             else:
-                label, id = owner.options[new_idx]
-                org = self.org_map[id]
+                label, _id = owner.options[new_idx]  # @UnusedVariable
+                org = self.org_map[_id]
                 self._setup_project(org.projects)
 
         def project_handler(change):
@@ -355,8 +359,8 @@ class MMCCommitSelectorWidget:
             elif (owner.disabled):
                 pass
             else:
-                label, id = self.project_widget.options[new_idx]
-                project = self.project_map[id]
+                label, _id = self.project_widget.options[new_idx]  # @UnusedVariable
+                project = self.project_map[_id]
                 self._setup_ref(project.refs)
 
         def ref_handler(change):
@@ -370,8 +374,8 @@ class MMCCommitSelectorWidget:
             elif (owner.disabled):
                 pass
             else:
-                label, id = self.ref_widget.options[new_idx]
-                ref = self.ref_map[id]
+                label, _id = self.ref_widget.options[new_idx]  # @UnusedVariable
+                ref = self.ref_map[_id]
                 self._setup_commit(ref.commits)
 
         self.org_widget.observe(names='index', handler=org_handler)
@@ -417,10 +421,10 @@ class MMCCommitSelectorWidget:
             [(org.org_id, org) for org in org_list])
         self.org_widget.options = [('---- Select org', None)] + [
             (
-                "{} (ID: {})".format(org.name, id),
-                id
+                "{} (ID: {})".format(org.name, _id),
+                _id
             )
-            for id, org in self.org_map.items()
+            for _id, org in self.org_map.items()
         ]
         self.org_widget.index = 0
         self.org_widget.disabled = False
@@ -432,10 +436,10 @@ class MMCCommitSelectorWidget:
         self.project_map = collections.OrderedDict([(project.project_id, project) for project in project_list])
         self.project_widget.options = [('---- Select project', None)] + [
             (
-                "{} (ID: {})".format(project.name, id),
-                id
+                "{} (ID: {})".format(project.name, _id),
+                _id
             )
-            for id, project in self.project_map.items()
+            for _id, project in self.project_map.items()
         ]
         self.project_widget.index = 0
         self.project_widget.disabled = False
@@ -447,10 +451,10 @@ class MMCCommitSelectorWidget:
         self.ref_map = collections.OrderedDict([(ref.ref_id, ref) for ref in ref_list])
         self.ref_widget.options = [('---- Select ref', None)] + [
             (
-                "{} (ID: {})".format(ref.name, id),
-                id
+                "{} (ID: {})".format(ref.name, _id),
+                _id
             )
-            for id, ref in self.ref_map.items()
+            for _id, ref in self.ref_map.items()
         ]
         self.ref_widget.index = 0
         self.ref_widget.disabled = False
@@ -462,10 +466,10 @@ class MMCCommitSelectorWidget:
         self.commit_map = collections.OrderedDict([(commit['commitId'], commit) for commit in commit_list])
         self.commit_widget.options = [('---- Select commit', None)] + [
             (
-                "{} (ID: {})".format(commit['name'], id),
-                id
+                "{} (ID: {})".format(commit['name'], _id),
+                _id
             )
-            for id, commit in self.commit_map.items()
+            for _id, commit in self.commit_map.items()
         ]
         self.commit_widget.index = 0
         self.commit_widget.disabled = False
@@ -532,8 +536,8 @@ class TWCRevisionSelectorWidget:
             elif (owner.disabled):
                 pass
             else:
-                label, id = owner.options[new_idx]
-                workspace = self.workspace_map[id]
+                label, _id = owner.options[new_idx]  # @UnusedVariable
+                workspace = self.workspace_map[_id]
                 self._setup_resource(workspace.resources)
 
         def resource_handler(change):
@@ -547,8 +551,8 @@ class TWCRevisionSelectorWidget:
             elif (owner.disabled):
                 pass
             else:
-                label, id = self.resource_widget.options[new_idx]
-                resource = self.resource_map[id]
+                label, _id = self.resource_widget.options[new_idx]  # @UnusedVariable
+                resource = self.resource_map[_id]
                 self._setup_branch(resource.branches)
                 
         def branch_handler(change):
@@ -562,8 +566,8 @@ class TWCRevisionSelectorWidget:
             elif (owner.disabled):
                 pass
             else:
-                label, id = self.branch_widget.options[new_idx]
-                branch = self.branch_map[id]
+                label, _id = self.branch_widget.options[new_idx]  # @UnusedVariable
+                branch = self.branch_map[_id]
                 self._setup_revision(branch.revisions)
                 
         self.workspace_widget.observe(names='index', handler = workspace_handler)
@@ -609,10 +613,10 @@ class TWCRevisionSelectorWidget:
             [(workspace.workspace_id, workspace) for workspace in workspace_list])
         self.workspace_widget.options=[('---- Select workspace', None)] + [
                 (
-                    "{} (ID: {})".format(workspace.title, id),
-                    id
+                    "{} (ID: {})".format(workspace.title, _id),
+                    _id
                 ) 
-                for id,workspace in self.workspace_map.items()
+                for _id,workspace in self.workspace_map.items()
             ]
         self.workspace_widget.index=0
         self.workspace_widget.disabled = False
@@ -623,10 +627,10 @@ class TWCRevisionSelectorWidget:
         self.resource_map = collections.OrderedDict([(resource.resource_id, resource) for resource in resource_list])
         self.resource_widget.options=[('---- Select resource', None)] + [
                 (
-                    "{} (ID: {})".format(resource.title, id),
-                    id
+                    "{} (ID: {})".format(resource.title, _id),
+                    _id
                 ) 
-                for id,resource in self.resource_map.items()
+                for _id,resource in self.resource_map.items()
             ]
         self.resource_widget.index=0
         self.resource_widget.disabled = False
@@ -637,10 +641,10 @@ class TWCRevisionSelectorWidget:
         self.branch_map = collections.OrderedDict([(branch.branch_id, branch) for branch in branch_list])
         self.branch_widget.options=[('---- Select branch', None)] + [
                 (
-                    "{} (ID: {})".format(branch.title, id),
-                    id
+                    "{} (ID: {})".format(branch.title, _id),
+                    _id
                 ) 
-                for id,branch in self.branch_map.items()
+                for _id,branch in self.branch_map.items()
             ]
         self.branch_widget.index=0
         self.branch_widget.disabled = False
@@ -851,11 +855,11 @@ def element_short_string(raw_container_content, raw_element_content):
     #meta_package = qualified_type[0]
     #type = qualified_type[1]
     name = raw_element_content.get("kerml:name", None)
-    id = raw_element_content.get("kerml:esiID", '<unknown ID>')
+    _id = raw_element_content.get("kerml:esiID", '<unknown ID>')
     if name:
-        return "'{}' ({}) #{}".format(name, qualified_type, id)
+        return "'{}' ({}) #{}".format(name, qualified_type, _id)
     else:
-        return "<unnamed> ({}) #{}".format(qualified_type, id)
+        return "<unnamed> ({}) #{}".format(qualified_type, _id)
 
 
 
@@ -901,7 +905,6 @@ class ElementInfoWidget:
         header = element_short_string(raw_container_content, raw_element_content)
         
         field_values = raw_element_content.get('kerml:esiData', {})
-        field_value_pairs = [{'field':field, 'value':value} for field,value in field_values.items() if (value is not None) and not ([]==value)]
         grid_content_boxes = []
 
         if self.attempt_batch_prefetch:
@@ -989,3 +992,4 @@ class ElementInfoWidget:
           
     def display(self):
         display(self.accordion)
+
