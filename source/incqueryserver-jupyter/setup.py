@@ -22,11 +22,17 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+# single-sourcing of version string specified in about.py
+# see solution 3 @ https://packaging.python.org/guides/single-sourcing-package-version
+version = {}
+with open("iqs_jupyter/about.py") as fp:
+    exec(fp.read(), version)
+
 REQUIRES = ["incqueryserver-api-python-client"]
 
 setuptools.setup(
     name="incqueryserver-jupyter",
-    version="0.10.0",
+    version=version['__version__'],
     author="Gábor Bergmann",
     author_email="gabor.bergmann@incquerylabs.com",
     description="IncQuery Server Client Extensions for Jupyter and Python",

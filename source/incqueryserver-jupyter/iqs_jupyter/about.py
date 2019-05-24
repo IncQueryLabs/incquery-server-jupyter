@@ -13,19 +13,11 @@
 # limitations under the License.
 
 '''
-    IncQuery Server Client Extensions for Jupyter and Python
+Created on 2019. máj. 24.
 
-    Requires [IncQuery Server](https://incquery.io) to operate.
-
-
-Created on 2019-05-17
-
-@author: Gábor Bergmann
+@author: Gabor Bergmann
 '''
 
-# coding: utf-8
-from __future__ import absolute_import
-
-from iqs_jupyter.about import __version__
-
-from iqs_jupyter.iqs_jupyter import *
+# single-sourcing of version string
+# see solution 3 @ https://packaging.python.org/guides/single-sourcing-package-version
+__version__ = "0.10.0"
