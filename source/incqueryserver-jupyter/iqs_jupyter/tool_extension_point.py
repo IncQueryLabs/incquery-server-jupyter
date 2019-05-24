@@ -13,23 +13,23 @@
 # limitations under the License.
 
 '''
-    IncQuery Server Client Extensions for Jupyter and Python
+Created on 2019. máj. 24.
 
-    Requires [IncQuery Server](https://incquery.io) to operate.
-
-
-Created on 2019-05-17
-
-@author: Gábor Bergmann
+@author: Gabor Bergmann
 '''
 
-# coding: utf-8
-from __future__ import absolute_import
+from typing import Optional, Callable, List, Any  # @UnusedImport
 
-from iqs_jupyter.about import __version__
+# connector-specific extensions may add tools such as browser widgets here
+class IQSJupyterTools:
+    def __init__(
+        self,
+        iqs
+    ):
+        self.iqs = iqs
 
-# end-use modules
-from iqs_jupyter.core_extensions import *
-from iqs_jupyter.mms_extensions import *
-from iqs_jupyter.twc_extensions import *
-from iqs_jupyter.twc_osmc_extensions import *
+
+# connector-specific extensions may custom ways to convert a dict to an element representation; 
+#     parse a dict and return the constructed element or None if not the right format
+#     default is ElementInCompartmentDescriptor 
+element_dict_recognizers : List[Callable[[dict], Optional[Any]]] = []
