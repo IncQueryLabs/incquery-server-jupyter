@@ -18,23 +18,23 @@ See details at: [jupyter.org](https://jupyter.org/install)
    1. Get a current version of the OpenAPI Generator, e.g. by simply downloading [openapi-generator-cli-3.3.4.jar](http://central.maven.org/maven2/org/openapitools/openapi-generator-cli/3.3.4/openapi-generator-cli-3.3.4.jar); for further options, see [here](https://openapi-generator.tech/docs/installation)
    1. Execute the following command to generate python sources into a target directory:
 
-            java -jar ${path-to-openapi-generator-cli-3.3.4.jar} generate -i ${path-to-iqs4twc.yaml} -l python -o ${this-git-repo}/python-client-iqs -DpackageName=iqs_client -DprojectName=iqs-twc-api  > ${path-to-logfile}
+            java -jar ${path-to-openapi-generator-cli-3.3.4.jar} generate -i ${path-to-iqs4twc.yaml} -l python -o ${this-git-repo}/source-gen/incqueryserver-api-python-client -DpackageVersion="0.10.0" -DpackageUrl="https://incquery.io" -DpackageName=iqs_client -DprojectName=incqueryserver-api-python-client  > ${path-to-logfile}
 
-   1. (In the Anaconda console environment) build a conda package from the generated sources, then install it:
+   1. (In the Anaconda console environment) build a conda package from the generated sources, then install it (or alternatively use `conda develop`, see later):
 
-            conda build ${this-git-repo}/releng/iqs-jupyter-packaging/conda/iqs-twc-api
-            conda install --use-local iqs-twc-api
+            conda build ${this-git-repo}/releng/iqs-jupyter-packaging/conda/incqueryserver-api-python-client
+            conda install --use-local incqueryserver-api-python-client
 
-1. Designate a location as the notebook home, where notebook files will be stored. 
+1. Designate a location as the notebook home, where notebook files will be stored. For example, use `${this-git-repo}/example-notebook-home`.
 1. Ensure that the non-generated Jupyter-specific client extensions are available to notebooks by executing ONE of the following options: 
    * For end users: (in the Anaconda console environment) build a conda package from the client extensions sources, then install it:
 
-            conda build ${this-git-repo}/releng/iqs-jupyter-packaging/conda/iqs-jupyter
-            conda install --use-local iqs-jupyter
+            conda build ${this-git-repo}/releng/iqs-jupyter-packaging/conda/incqueryserver-jupyter
+            conda install --use-local incqueryserver-jupyter
 
-   * For developers: issue the following command to perform a "developer" install; changes to the source will be reflected immediately to newly (re)started Python interpreters / Jupyter kernels (previously started kernels that already executed the `import` will keep the old content until restarted).
+   * For developers: issue the following command to perform a "developer" install directly from the source project; changes to the source will be reflected immediately to newly (re)started Python interpreters / Jupyter kernels (previously started kernels that already executed the `import` will keep the old content until restarted).
 
-            conda develop ${this-git-repo}/source/iqs-jupyter-extensions/src
+            conda develop ${this-git-repo}/source/incqueryserver-jupyter
 
 1. (in the Anaconda console environment) start a Jupyter server from `${path-to-notebook-home}`: 
 ```jupyter notebook```
@@ -68,11 +68,11 @@ See details at: [jupyter.org](https://jupyter.org/install)
 
 The above instructions mostly apply here as well. However, instead of issuing `conda build` and `conda install` on the conda recipe directories, run instead 
 
-    pip install ${this-git-repo}/python-client-iqs
+    pip install ${this-git-repo}/source-gen/incqueryserver-api-python-client
 
 and then 
 
-    pip install ${this-git-repo}/source/iqs-jupyter-extensions/src
+    pip install ${this-git-repo}/source/incqueryserver-jupyter
 
 Specifying `install -e` will install these pip packages in "editable" mode, similarly to `conda develop`.
   
