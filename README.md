@@ -1,4 +1,6 @@
 # incquery-server-jupyter
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/IncQueryLabs/incquery-server-jupyter/master?filepath=example-notebook-home%2Fiqs-demo-mms.ipynb)
+
 IncQuery Server Client Extensions for Jupyter and Python
 
 Requires [IncQuery Server](https://incquery.io) to operate.

@@ -24,12 +24,14 @@ Created on 2019-05-17
 '''
 
 # coding: utf-8
-from __future__ import absolute_import
-
 from iqs_jupyter.about import __version__
 
-# end-use modules
+# end-user modules
 from iqs_jupyter.core_extensions import *
-from iqs_jupyter.mms_extensions import *
-from iqs_jupyter.twc_extensions import *
-from iqs_jupyter.twc_osmc_extensions import *
+
+if 'MmsRepositoryApi' in dir(iqs_client):
+    from iqs_jupyter.mms_extensions import *
+    
+if 'RepositoryApi' in dir(iqs_client):
+    from iqs_jupyter.twc_extensions import *
+    from iqs_jupyter.twc_osmc_extensions import *

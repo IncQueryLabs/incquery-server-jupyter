@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SCRIPT_LOC=${0%/*}
+. "${SCRIPT_LOC}/setEnv.sh"
+
+
+echo pip install $CLIENT_SDIST_ARCHIVE_LOC
+pip install $CLIENT_SDIST_ARCHIVE_LOC
+
+echo pip install "${SCRIPT_LOC}/../source/incqueryserver-jupyter"
+pip install "${SCRIPT_LOC}/../source/incqueryserver-jupyter"
+
+jupyter contrib nbextension install --user
+jupyter nbextension enable --py widgetsnbextension
+jupyter nbextension enable python-markdown/main
+# jupyter nbextension enable codefolding/main
+jupyter nbextension enable collapsible_headings/main
+jupyter nbextension enable zenmode/main
+
+

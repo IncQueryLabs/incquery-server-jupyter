@@ -1,0 +1,7 @@
+#!/bin/bash
+
+SCRIPT_LOC=${0%/*}
+. "${SCRIPT_LOC}/setEnv.sh"
+
+echo "$@" 
+exec "$@" 

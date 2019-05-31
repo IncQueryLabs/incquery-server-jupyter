@@ -265,25 +265,49 @@ class IQSConnectorWidget:
         )
 
 
+
+
+
+# def _iqs_core_api_initilizer(iqs):
+#     self.impact_analysis = iqs_client.ImpactAnalysisApi(core_api_client_iqs)
+#     self.in_memory_index = iqs_client.InMemoryIndexApi(core_api_client_iqs)
+#     self.persistent_index = iqs_client.PersistentIndexApi(core_api_client_iqs)
+#     self.queries = iqs_client.QueriesApi(core_api_client_iqs)
+#     self.query_execution = iqs_client.QueryExecutionApi(core_api_client_iqs)
+#     self.repository = iqs_client.RepositoryApi(core_api_client_iqs)
+#     self.server_management = iqs_client.ServerManagementApi(core_api_client_iqs)
+#     self.validation = iqs_client.ValidationApi(core_api_client_iqs)    
+#     self.integration = iqs_client.IntegrationApi(core_api_client_iqs)
+#     self.mms_repository = iqs_client.MmsRepositoryApi(core_api_client_iqs)
+#     self.experimental = iqs_client.ExperimentalApi(core_api_client_iqs)
+
+# TODO auto-generate from dir(iqs_client.api) ? 
+_iqs_client_api_classes = {
+    'impact_analysis'   : "ImpactAnalysisApi",
+    'in_memory_index'   : "InMemoryIndexApi",
+    'persistent_index'  : "PersistentIndexApi",
+    'queries'           : "QueriesApi",
+    'query_execution'   : "QueryExecutionApi",
+    'repository'        : "RepositoryApi",
+    'server_management' : "ServerManagementApi",
+    'validation'        : "ValidationApi",    
+    'integration'       : "IntegrationApi",
+    'mms_repository'    : "MmsRepositoryApi",
+    'experimental'      : "ExperimentalApi"
+}
+
 class IQSClient:
     def __init__(
         self,
         configuration
     ):
         core_api_client_iqs = iqs_client.ApiClient(configuration)
+        for api_field_name, api_class_name in _iqs_client_api_classes.items():
+            if api_class_name in dir(iqs_client): # there might be api classes presently missing / disabled
+                api_class = getattr(iqs_client, api_class_name)
+                api_object = api_class(core_api_client_iqs)
+                setattr(self, api_field_name, api_object)
         
         self.jupyter_tools = ext_point.IQSJupyterTools(self)
-        
-        self.impact_analysis = iqs_client.ImpactAnalysisApi(core_api_client_iqs)
-        self.in_memory_index = iqs_client.InMemoryIndexApi(core_api_client_iqs)
-        self.persistent_index = iqs_client.PersistentIndexApi(core_api_client_iqs)
-        self.queries = iqs_client.QueriesApi(core_api_client_iqs)
-        self.query_execution = iqs_client.QueryExecutionApi(core_api_client_iqs)
-        self.repository = iqs_client.RepositoryApi(core_api_client_iqs)
-        self.server_management = iqs_client.ServerManagementApi(core_api_client_iqs)
-        self.validation = iqs_client.ValidationApi(core_api_client_iqs)    
-        self.integration = iqs_client.IntegrationApi(core_api_client_iqs)
-        self.mms_repository = iqs_client.MmsRepositoryApi(core_api_client_iqs)
-        self.experimental = iqs_client.ExperimentalApi(core_api_client_iqs)
 
 
