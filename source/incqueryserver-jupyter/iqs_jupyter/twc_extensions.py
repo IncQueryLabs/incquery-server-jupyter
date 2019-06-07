@@ -316,7 +316,7 @@ def _monkey_patch_revision_descriptor_to_model_compartment(self):
     return iqs_client.ModelCompartment(compartment_uri=self.to_compartment_uri())
 
 def _monkey_patch_jupytertools_twc_revision_selector_widget(self, **kwargs):
-    return TWCRevisionSelectorWidget(iqs=self.iqs, **kwargs)
+    return TWCRevisionSelectorWidget(iqs=self._iqs, **kwargs)
 
 def _do_monkey_patching():
     iqs_client.ElementDescriptor.to_str = _monkey_patch_element_descriptor_to_str

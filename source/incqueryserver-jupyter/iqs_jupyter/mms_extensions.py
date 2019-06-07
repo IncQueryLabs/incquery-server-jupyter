@@ -239,7 +239,7 @@ def _monkey_patch_mms_commit_to_model_compartment(self):
     return iqs_client.ModelCompartment(compartment_uri=self.to_compartment_uri())
 
 def _monkey_patch_jupytertools_mms_commit_selector_widget(self, **kwargs):
-    return MMCCommitSelectorWidget(iqs=self.iqs, **kwargs)
+    return MMCCommitSelectorWidget(iqs=self._iqs, **kwargs)
 
 def _do_monkey_patching():
     iqs_client.MMSCommitDescriptor.to_compartment_uri = _monkey_patch_mms_commit_to_compartment_uri

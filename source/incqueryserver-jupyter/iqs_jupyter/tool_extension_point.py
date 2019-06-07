@@ -26,7 +26,7 @@ class IQSJupyterTools:
         self,
         iqs
     ):
-        self.iqs = iqs
+        self._iqs = iqs
 
 
 # connector-specific extensions may add custom ways to convert a dict to an element representation; 

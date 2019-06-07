@@ -21,6 +21,7 @@ Created on 2019-04-09
 from typing import Optional
 import ipywidgets as widgets
 from IPython.display import display
+import html
 
 import iqs_client
 
@@ -66,7 +67,6 @@ def _dict_to_element(dict_or_attribute_value, url_provider=None):
 ## monkey patch section
 
 def _monkey_patch_element_in_compartment_descriptor_repr_html(self):
-    import html
     if hasattr(self, 'url'):
         return '<a href="{}" title="{}">element #{}</a>'.format(html.escape(self.url), html.escape(self),
                                                                 html.escape(self.relative_element_id))
@@ -83,6 +83,11 @@ def _monkey_patch_model_compartment_get_element_in_compartment_by_id(self, relat
         relative_element_id=relative_element_id
     )
 
+def _monkey_patch_model_compartment_is_loaded_in_memory(self, iqs):
+    in_memory_compartments_response = iqs.in_memory_index.list_inmemory_model_compartments()
+    return self in in_memory_compartments_response.inmemory_model_compartments
+
+
 def _monkey_patch_query_execution_response_to_data_frame(self, url_provider=None):
     import pandas as pd
     return pd.DataFrame(self.to_list_of_matches(url_provider))
@@ -93,12 +98,30 @@ def _monkey_patch_query_execution_response_to_list_of_matches(self, url_provider
 
 #****
     
+def _monkey_patch_validation_results_repr_html_(self):    
+    diag_rows = "\n".join([
+            "<tr><th>{}</th><td>{}</td></tr>".format(
+                html.escape(diag_type), 
+                html.escape(str(diag_count))
+            ) 
+            for diag_type, diag_count in self.diagnostics.to_dict().items()
+        ])
+    
+    return '''
+        <span title="{}">Validation results <i>(see hover for details)</i></span>
+        <div>
+        <table border="1">
+            <tbody>
+                {}
+            </tbody>
+        </table>
+        </div>
+    '''.format(html.escape(self.to_str()), diag_rows)
+    
 def _monkey_patch_generic_response_message_repr_html_(self):
-    import html
     return '<span title="{}">{} <i>(see hover for details)</i></span>'.format(html.escape(self.to_str()), html.escape(self.message))
 
 def _monkey_patch_query_fqn_list_repr_html_(self):
-    import html
     ns_list = self.query_fq_ns
     if ns_list:
         list_body = "\n".join([
@@ -109,7 +132,6 @@ def _monkey_patch_query_fqn_list_repr_html_(self):
     return '<span title="{}">No queries <i>(see hover for details)</i></span>'.format(html.escape(self.to_str()))
 
 def _cell_to_html(cell):
-    import html
     if hasattr(cell, '_repr_html_'):
         return cell._repr_html_()
     elif isinstance(cell, str):
@@ -118,7 +140,6 @@ def _cell_to_html(cell):
         return str(cell)
 
 def _monkey_patch_query_execution_response_to_html(self):
-    import html
     count_report = '<span title="{}">{} match(es) of query{}{} <i>(see hover for details)</i></span>'.format(
         html.escape(self.to_str()), 
         html.escape(str(self.match_set_size)),
@@ -179,6 +200,7 @@ def _monkey_patch_query_execution_response_to_html(self):
 def _do_monkey_patching():
     iqs_client.ElementInCompartmentDescriptor._repr_html_ = _monkey_patch_element_in_compartment_descriptor_repr_html
     iqs_client.ModelCompartment.get_element_in_compartment_by_id = _monkey_patch_model_compartment_get_element_in_compartment_by_id
+    iqs_client.ModelCompartment.is_loaded_in_memory = _monkey_patch_model_compartment_is_loaded_in_memory
     
     iqs_client.QueryExecutionResponse.to_list_of_matches = _monkey_patch_query_execution_response_to_list_of_matches
     iqs_client.QueryExecutionResponse.to_data_frame = _monkey_patch_query_execution_response_to_data_frame
@@ -187,6 +209,9 @@ def _do_monkey_patching():
     iqs_client.IndexMessage._repr_html_ = _monkey_patch_generic_response_message_repr_html_
     iqs_client.SimpleMessage._repr_html_ = _monkey_patch_generic_response_message_repr_html_
     iqs_client.QueryFQNList._repr_html_ = _monkey_patch_query_fqn_list_repr_html_
+    
+    # TODO TWC-specific version missing, as well as additional features
+    iqs_client.GenericValidationResults._repr_html_ = _monkey_patch_validation_results_repr_html_
 
 _do_monkey_patching()
 
