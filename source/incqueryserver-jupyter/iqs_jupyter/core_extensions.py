@@ -98,25 +98,51 @@ def _monkey_patch_query_execution_response_to_list_of_matches(self, url_provider
 
 #****
     
-def _monkey_patch_validation_results_repr_html_(self):    
-    diag_rows = "\n".join([
-            "<tr><th>{}</th><td>{}</td></tr>".format(
+def _monkey_patch_typed_element_in_compartment_repr_html(self):
+    type_html = html.escape(self.element_type if self.element_type else "<untyped>")
+    element_html = self.element._repr_html_()
+    if self.element_name:
+        return "'{}' ({}) {}".format(html.escape(self.element_name), type_html, element_html)
+    elif self.element_type:
+        return "<unnamed> ({}) {}".format(type_html, element_html)
+    else:
+        return element_html
+
+def _monkey_patch_generic_validation_rule_repr_html(self):
+    return '<span title="{}">{} occurrences of "{}" <i>(see hover for details)</i></span> {}'.format(
+        html.escape(self.to_str()),
+        len(self.matching_elements),
+        html.escape(self.message),
+        "<ul>{}</ul>".format(
+            "\n".join([
+                "<li>{}</li>".format(
+                    typed_diag_element.element._repr_html_()
+                )
+                for typed_diag_element in self.matching_elements
+            ])
+        )
+    )
+    
+def _monkey_patch_generic_validation_results_repr_html(self):
+    return '<span title="{}">Validation results <i>(see hover for details)</i></span> <ul>{}</ul>'.format(
+        html.escape(self.to_str()),
+        "\n".join([
+            "<li>{} ({}) {}</li>".format(
                 html.escape(diag_type), 
-                html.escape(str(diag_count))
-            ) 
+                str(diag_count),
+                "" if not diag_count else "<ul>{}</ul>".format(
+                    "\n".join([
+                        '<li>{}</li>'.format(
+                            rule._repr_html_()
+                        )
+                        for rule in self.rules
+                        if rule.severity == diag_type and rule.matching_elements
+                    ])
+                )
+            )
             for diag_type, diag_count in self.diagnostics.to_dict().items()
         ])
-    
-    return '''
-        <span title="{}">Validation results <i>(see hover for details)</i></span>
-        <div>
-        <table border="1">
-            <tbody>
-                {}
-            </tbody>
-        </table>
-        </div>
-    '''.format(html.escape(self.to_str()), diag_rows)
+    )
     
 def _monkey_patch_generic_response_message_repr_html_(self):
     return '<span title="{}">{} <i>(see hover for details)</i></span>'.format(html.escape(self.to_str()), html.escape(self.message))
@@ -211,7 +237,9 @@ def _do_monkey_patching():
     iqs_client.QueryFQNList._repr_html_ = _monkey_patch_query_fqn_list_repr_html_
     
     # TODO TWC-specific version missing, as well as additional features
-    iqs_client.GenericValidationResults._repr_html_ = _monkey_patch_validation_results_repr_html_
+    iqs_client.GenericValidationResults._repr_html_ = _monkey_patch_generic_validation_results_repr_html
+    iqs_client.GenericValidationRule._repr_html_ = _monkey_patch_generic_validation_rule_repr_html
+    iqs_client.TypedElementInCompartmentDescriptor._repr_html_ = _monkey_patch_typed_element_in_compartment_repr_html
 
 _do_monkey_patching()
 
