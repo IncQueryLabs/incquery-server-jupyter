@@ -35,3 +35,6 @@ if 'MmsRepositoryApi' in dir(iqs_client):
 if 'RepositoryApi' in dir(iqs_client):
     from iqs_jupyter.twc_extensions import *
     from iqs_jupyter.twc_osmc_extensions import *
+
+# namespace shortcut for API request/response classes
+from iqs_client import models as schema
