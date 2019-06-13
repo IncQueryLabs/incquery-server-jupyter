@@ -13,4 +13,4 @@ export IQS_JUPYTER_default_IQS_password=incqueryserverguest
 export IQS_JUPYTER_default_mms_org=9ff6af30-af8a-4f9d-a26b-499010ba5b6e
 export IQS_JUPYTER_default_mms_project=PROJECT-0e791c0e-16fe-422f-8f85-462ab035ce99
 export IQS_JUPYTER_default_mms_ref=master
-export IQS_JUPYTER_default_mms_commit=03afd6ed-8180-478d-a13c-2f45973519bc
+export IQS_JUPYTER_default_mms_commit=8598d33b-4950-4355-a404-18b0d8148b47
