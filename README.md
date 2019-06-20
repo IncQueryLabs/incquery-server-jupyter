@@ -3,7 +3,12 @@
 
 IncQuery Server Client Extensions for Jupyter and Python
 
-Requires [IncQuery Server](https://incquery.io) to operate.
+Requires [IncQuery Server (IQS)](https://incquery.io) to operate.
+
+
+## Try it first
+
+Click the __binder__ shield above to spin up a deployment publicly hosted on [MyBinder](https://mybinder.org/), with wired-in guest access to [a public IQS demo instance](https://openmbee.incquery.io) and [the OpenMBEE public MMS model repository](https://mms.openmbee.org/).
 
 
 ## Getting started with the proof-of-concept Jupyter client, using conda
