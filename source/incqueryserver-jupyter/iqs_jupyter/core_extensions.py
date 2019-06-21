@@ -133,9 +133,9 @@ def _monkey_patch_generic_validation_results_to_data_frame(self):
 def _monkey_patch_generic_validation_results_to_list_of_diagnostic_items(self):
     return [
         ValidationDiagnosticItem(
-            rule.constraint.type, rule.constraint.name, rule.constraint.element,
+            rule.constraint.type, rule.constraint.name, rule.constraint.element.relative_element_id, rule.constraint.element,
             rule.severity, rule.message,
-            typed_diag_element.type, typed_diag_element.name, typed_diag_element.element
+            typed_diag_element.type, typed_diag_element.name, typed_diag_element.element.relative_element_id, typed_diag_element.element
         )
         for rule in self.rules
         for typed_diag_element in rule.matching_elements
@@ -431,8 +431,8 @@ class IQSClient:
 
 ValidationDiagnosticItem = collections.namedtuple(
     "ValidationDiagnosticItem", 
-    ['constraint_element_type', 'constraint_element_name', 'constraint_element',
+    ['constraint_element_type', 'constraint_element_name', 'constraint_element_relative_id', 'constraint_element',
      'severity', 'message', 
-     'matching_element_type', 'matching_element_name', 'matching_element']
+     'matching_element_type', 'matching_element_name', 'matching_element_relative_id', 'matching_element']
 )
 
