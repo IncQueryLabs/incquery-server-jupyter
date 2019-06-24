@@ -308,6 +308,21 @@ _do_monkey_patching()
 
 ## global utility functions
 
+validation_color_scale = {
+    'fatal': 'black', 
+    'error': 'red', 
+    'warning': 'orange', 
+    'info': 'blue', 
+    'debug': 'green'
+}
+validation_diagnostics_ranking = [
+    'fatal', 
+    'error', 
+    'warning', 
+    'info', 
+    'debug'
+]
+
 def binding(**kwargs):
     return [
         {"parameter": param_name, "value": param_value} 
