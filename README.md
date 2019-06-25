@@ -11,28 +11,20 @@ Click the __binder__ shield above to spin up a deployment publicly hosted on [My
 
 ## Getting started 
 
-### Using Conda
+Assuming that you have cloned this repository to your computer at path `${this-git-repo}`, the following instructions will help you get the Jupyter extensions running.
+
+### Using Conda 
 
 1. Make sure Miniconda3/Anaconda is installed, along with Python 3.7+ and the `conda` package manager 
 1. Make sure Jupyter is installed: 
 
         conda install jupyter
-See details at: [jupyter.org](https://jupyter.org/install)
-1. Obtain the Python client library in one of the following ways:
-   * download a released version from https://github.com/IncQueryLabs/incquery-server-jupyter/releases, then extract contents into `${this-git-repo}/releng/source-gen`
-   * OR generate and install a Python-based OpenAPI client for your version of IQS by performing the following steps:
-   1. Obtain a current version of IncQuery Server and locate the the `iqs4twc.yaml` API specification file using ONE of the following methods:
-      * If you have access to the IQS source code, find the specification at `${path-to-iqs-git}/web-api-twc/src/main/resources/webroot/iqs4twc.yaml`
-      * If you have access to a running IQS instance, visit the Swagger API browser (probably at `${iqs-web-address}/swagger`) and find the link to `iqs4twc.yaml` in small print directly under the main heading `IncQuery Server`.
-   1. Get a current version of the OpenAPI Generator, e.g. by simply downloading [openapi-generator-cli-3.3.4.jar](http://central.maven.org/maven2/org/openapitools/openapi-generator-cli/3.3.4/openapi-generator-cli-3.3.4.jar); for further options, see [here](https://openapi-generator.tech/docs/installation)
-   1. Execute the following command to generate python sources into a target directory:
+        
+    See details at: [jupyter.org](https://jupyter.org/install)
+    
+1. The main dependency of the Jupyter client extension is the automatically generated Python-based IQS API client. Locate the Python client library hosted at your IQS installation; e.g. the library accompanying the public IQS demo server is available at https://openmbee.incquery.io/client/incqueryserver-api-python-client-0.11.0.tar.gz for installation. Install this *sdist* using `pip` from your Anaconda console:
 
-            java -jar ${path-to-openapi-generator-cli-3.3.4.jar} generate -i ${path-to-iqs4twc.yaml} -l python -o ${this-git-repo}/source-gen/incqueryserver-api-python-client -DpackageVersion="0.10.0" -DpackageUrl="https://incquery.io" -DpackageName=iqs_client -DprojectName=incqueryserver-api-python-client  > ${path-to-logfile}
-
-1. (In the Anaconda console environment) build a conda package from the downloaded or generated sources, then install it (or alternatively use `conda develop`, see later):
-
-            conda build ${this-git-repo}/releng/iqs-jupyter-packaging/conda/incqueryserver-api-python-client
-            conda install --use-local incqueryserver-api-python-client
+        pip install ${address-of-python-client-sdist}
 
 1. Designate a location as the notebook home, where notebook files will be stored. For example, use `${this-git-repo}/example-notebook-home`.
 1. Ensure that the non-generated Jupyter-specific client extensions are available to notebooks by executing ONE of the following options: 
@@ -45,13 +37,9 @@ See details at: [jupyter.org](https://jupyter.org/install)
 
             conda develop ${this-git-repo}/source/incqueryserver-jupyter
 
-### Using `pip`
+### Using `pip` instead of Conda
 
 The above instructions mostly apply here as well. However, instead of issuing `conda build` and `conda install` on the conda recipe directories, run instead 
-
-    pip install ${this-git-repo}/source-gen/incqueryserver-api-python-client
-
-and then 
 
     pip install ${this-git-repo}/source/incqueryserver-jupyter
 
