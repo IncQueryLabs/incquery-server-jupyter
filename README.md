@@ -29,7 +29,7 @@ See details at: [jupyter.org](https://jupyter.org/install)
 
             java -jar ${path-to-openapi-generator-cli-3.3.4.jar} generate -i ${path-to-iqs4twc.yaml} -l python -o ${this-git-repo}/source-gen/incqueryserver-api-python-client -DpackageVersion="0.10.0" -DpackageUrl="https://incquery.io" -DpackageName=iqs_client -DprojectName=incqueryserver-api-python-client  > ${path-to-logfile}
 
-   1. (In the Anaconda console environment) build a conda package from the downloaded or generated sources, then install it (or alternatively use `conda develop`, see later):
+1. (In the Anaconda console environment) build a conda package from the downloaded or generated sources, then install it (or alternatively use `conda develop`, see later):
 
             conda build ${this-git-repo}/releng/iqs-jupyter-packaging/conda/incqueryserver-api-python-client
             conda install --use-local incqueryserver-api-python-client
