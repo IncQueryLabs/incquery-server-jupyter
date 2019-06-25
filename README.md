@@ -1,7 +1,5 @@
-# incquery-server-jupyter
+# Python and Jupyter Client Extensions for the IncQuery Server
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/IncQueryLabs/incquery-server-jupyter/master?filepath=example-notebook-home%2Fiqs-demo-mms.ipynb)
-
-IncQuery Server Client Extensions for Jupyter and Python
 
 Requires [IncQuery Server (IQS)](https://incquery.io) to operate.
 
@@ -11,14 +9,18 @@ Requires [IncQuery Server (IQS)](https://incquery.io) to operate.
 Click the __binder__ shield above to spin up a deployment publicly hosted on [MyBinder](https://mybinder.org/), with wired-in guest access to [a public IQS demo instance](https://openmbee.incquery.io) and [the OpenMBEE public MMS model repository](https://mms.openmbee.org/).
 
 
-## Getting started with the proof-of-concept Jupyter client, using conda
+## Getting started 
+
+### Using Conda
 
 1. Make sure Miniconda3/Anaconda is installed, along with Python 3.7+ and the `conda` package manager 
 1. Make sure Jupyter is installed: 
 
         conda install jupyter
 See details at: [jupyter.org](https://jupyter.org/install)
-1. Generate and install a Python-based OpenAPI client for your version of IQS by performing the following steps:
+1. Obtain the Python client library in one of the following ways:
+   * download a released version from https://github.com/IncQueryLabs/incquery-server-jupyter/releases, then extract contents into `${this-git-repo}/releng/source-gen`
+   * OR generate and install a Python-based OpenAPI client for your version of IQS by performing the following steps:
    1. Obtain a current version of IncQuery Server and locate the the `iqs4twc.yaml` API specification file using ONE of the following methods:
       * If you have access to the IQS source code, find the specification at `${path-to-iqs-git}/web-api-twc/src/main/resources/webroot/iqs4twc.yaml`
       * If you have access to a running IQS instance, visit the Swagger API browser (probably at `${iqs-web-address}/swagger`) and find the link to `iqs4twc.yaml` in small print directly under the main heading `IncQuery Server`.
@@ -27,7 +29,7 @@ See details at: [jupyter.org](https://jupyter.org/install)
 
             java -jar ${path-to-openapi-generator-cli-3.3.4.jar} generate -i ${path-to-iqs4twc.yaml} -l python -o ${this-git-repo}/source-gen/incqueryserver-api-python-client -DpackageVersion="0.10.0" -DpackageUrl="https://incquery.io" -DpackageName=iqs_client -DprojectName=incqueryserver-api-python-client  > ${path-to-logfile}
 
-   1. (In the Anaconda console environment) build a conda package from the generated sources, then install it (or alternatively use `conda develop`, see later):
+   1. (In the Anaconda console environment) build a conda package from the downloaded or generated sources, then install it (or alternatively use `conda develop`, see later):
 
             conda build ${this-git-repo}/releng/iqs-jupyter-packaging/conda/incqueryserver-api-python-client
             conda install --use-local incqueryserver-api-python-client
@@ -43,35 +45,7 @@ See details at: [jupyter.org](https://jupyter.org/install)
 
             conda develop ${this-git-repo}/source/incqueryserver-jupyter
 
-1. (in the Anaconda console environment) start a Jupyter server from `${path-to-notebook-home}`: 
-```jupyter notebook```
-1. Interact with Jupyter either via the newly opened browser window, or using the URL or token printed by the Jupyter server to its stdout. Create a new notebook or open an existing one within the notebook folder; see an example in `${this-git-repo}/example-notebook-home/iqs-demo-twc.ipynb` (if the parent folder is designated as notebook home, you should already see this notebook as a starting point).
-1. Within the notebook, get started by:
-   1. Import the Jupyter-specific client library
-
-            import iqs_jupyter
-
-   1. Create a widget to specify an access point
-
-            connector = iqs_jupyter.IQSConnectorWidget()
-
-   1. Fill out the text field of the widget to specify the address to a running IQS server instance, then create the main client object `iqs`:
-
-            iqs = connector.connect()
-   
-      * To skip manual form filling, it is possible to specify the initial content of the widget fields using a number of ways. First, `IQSConnectorWidget` has the optional parameters `initial_address`, `initial_user`, `initial_password`. Second, if such parameters are not given, results may be automatically filled from environment variables (see below). If such default values are known, it is possible to skip this step and the previous one by not displaying a widget at all:
-      
-                iqs = iqs_jupyter.connect()
-       
-   1. Browse for a TWC revision using 
-   
-            revision_selector = iqs.jupyter_tools.twc_revision_selector_widget()
-   
-   1. Access the full JSON/RPC API of IQS in the form of (you may use TAB completion):
-   
-            iqs.${api-category-label}.${api-call}
-  
-## Getting started without Anaconda/Miniconda, for `pip` users
+### Using `pip`
 
 The above instructions mostly apply here as well. However, instead of issuing `conda build` and `conda install` on the conda recipe directories, run instead 
 
@@ -82,9 +56,14 @@ and then
     pip install ${this-git-repo}/source/incqueryserver-jupyter
 
 Specifying `install -e` will install these pip packages in "editable" mode, similarly to `conda develop`.
-  
-  
-## Specify default context in environment variables
+
+### Additional dependencies
+
+The demo notebook uses `ploty` and `cufflinks` to demonstrate possible applications of the client extensions package. It is not recommended to install `cufflinks-py` using conda, as conda-forge seems to host an obsolete version not compatible with the demo; simply issue `pip install cufflinks` from the Anaconda console instead. 
+
+## Running the notebook
+
+### Set up environment variables first
   
 Several functions and classes defined in client extension take optional arguments whose default values can be injected via environment variables. This allows the notebook itself to be much simpler, by omitting connection data etc. 
 
@@ -116,12 +95,33 @@ jupyter notebook
   
 Caution: beware of whitespace, make sure there is none before/after the `=`.
 A similar shell script can be used in case of *nix systems; a docker file might be another good way to provide environment variables. 
-  
-  
-## Demo notes
 
-The demo notebook uses `ploty` and `cufflinks` to demonstrate possible applications of the client extensions package. It is not recommended to install `cufflinks-py` using conda, as conda-forge seems to host an obsolete version not compatible with the demo; simply issue `pip install cufflinks` from the Anaconda console instead. 
+### Run the notebook
 
+1. (in the Anaconda console environment) start a Jupyter server from `${path-to-notebook-home}`: 
+```jupyter notebook```
+1. Interact with Jupyter either via the newly opened browser window, or using the URL or token printed by the Jupyter server to its stdout. Create a new notebook or open an existing one within the notebook folder; see an example in `${this-git-repo}/example-notebook-home/iqs-demo-twc.ipynb` (if the parent folder is designated as notebook home, you should already see this notebook as a starting point).
+1. Within the notebook, get started by:
+   1. Import the Jupyter-specific client library
 
+            import iqs_jupyter
 
+   1. Create a widget to specify an access point
 
+            connector = iqs_jupyter.IQSConnectorWidget()
+
+   1. Fill out the text field of the widget to specify the address to a running IQS server instance, then create the main client object `iqs`:
+
+            iqs = connector.connect()
+   
+      * To skip manual form filling, it is possible to specify the initial content of the widget fields using a number of ways. First, `IQSConnectorWidget` has the optional parameters `initial_address`, `initial_user`, `initial_password`. Second, if such parameters are not given, results may be automatically filled from environment variables (see below). If such default values are known, it is possible to skip this step and the previous one by not displaying a widget at all:
+      
+                iqs = iqs_jupyter.connect()
+       
+   1. Browse for a TWC revision using 
+   
+            revision_selector = iqs.jupyter_tools.twc_revision_selector_widget()
+   
+   1. Access the full JSON/RPC API of IQS in the form of (you may use TAB completion):
+   
+            iqs.${api-category-label}.${api-call}
