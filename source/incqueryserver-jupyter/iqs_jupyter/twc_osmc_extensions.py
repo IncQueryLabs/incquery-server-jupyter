@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from ipywidgets.widgets.widget import Widget
+from builtins import super
 
 '''
 Created on 2019. máj. 24.
@@ -18,11 +20,14 @@ Created on 2019. máj. 24.
 @author: Gabor Bergmann
 '''
 
+from typing import Dict, Tuple, Any, Hashable, List
+
 import ipywidgets as widgets
 from IPython.display import display
 
 
 import iqs_jupyter.config_defaults as defaults
+import iqs_jupyter.abstract_widgets as abstract_widgets
 
 
 class OSMCConnectorWidget:
@@ -149,12 +154,12 @@ class OSMCClient:
 
     def element_short_string(self, element_descriptor):
         raw_container_content, raw_element_content = self.retrieve(element_descriptor)
-        return element_short_string(raw_container_content, raw_element_content)
+        return _twc_element_short_string(raw_container_content, raw_element_content)
         
     def show_element_info_widget(self, element_descriptor, **kwargs):
-        return ElementInfoWidget(osmc=self, initial_element=element_descriptor, **kwargs)
+        return TWCElementInfoWidget(osmc=self, initial_element=element_descriptor, **kwargs)
 
-def element_short_string(raw_container_content, raw_element_content):
+def _twc_element_short_string(raw_container_content, raw_element_content):
     # nsUri = raw_element_content["kerml:nsURI"]
     qualified_type = raw_element_content.get("@type", "(untyped)")#.split(':')
     #meta_package = qualified_type[0]
@@ -168,71 +173,31 @@ def element_short_string(raw_container_content, raw_element_content):
 
 
 
-class ElementInfoWidget:
+class TWCElementInfoWidget(abstract_widgets.AbstractElementInfoWidget):
     def __init__(
         self,
         osmc,
         initial_element,
-        attempt_batch_prefetch = True,
-        grid_container_layout = widgets.Layout(
-            grid_template_columns = "25% 73%", 
-            grid_gap="2%"),
-        field_box_layout = widgets.Layout(
-            overflow_x='auto', 
-            justify_content='flex-end'),
-        slot_item_layout = widgets.Layout(
-            width='auto', 
-            flex='0 0 auto'),
-        slot_box_layout = widgets.Layout(
-            overflow_x='auto',
-            #border='solid',
-            width='auto',
-            height='',
-            flex_flow='row',
-            display='flex', 
-            justify_content='flex-start')
+        **kwargs
     ):
         self.osmc = osmc
-        self.attempt_batch_prefetch = attempt_batch_prefetch
-        self.grid_container_layout = grid_container_layout
-        self.field_box_layout = field_box_layout
-        self.slot_item_layout = slot_item_layout
-        self.slot_box_layout = slot_box_layout
-        self.accordion = widgets.Accordion()
-        self.element_list = []
-        self.element_id_to_index = {}
-        self.element_id_to_descriptor = {}
         self.initial_element = initial_element
+        self.element_id_to_descriptor = {}
+        super().__init__(self, **kwargs)
         self.show_element_pane(initial_element)
-        
-    def _add_element_pane(self, element_descriptor):
-        raw_container_content, raw_element_content = self.osmc.retrieve(element_descriptor)
-        header = element_short_string(raw_container_content, raw_element_content)
-        
+    
+    def _unpack_element(self, element) -> Tuple[str, Dict[str, Any]]:
+        raw_container_content, raw_element_content = self.osmc.retrieve(element)
+        header = _twc_element_short_string(raw_container_content, raw_element_content)
         field_values = raw_element_content.get('kerml:esiData', {})
-        grid_content_boxes = []
-
-        if self.attempt_batch_prefetch:
-            self.osmc.retrieve_batch([element_descriptor
-                for field,value in field_values.items()
-                if (value)
-                for element_descriptor in self._value_element_descriptor_list(value)
-            ])
-        import html
-        for field,value in field_values.items():
-            if (value is not None) and not ([]==value):
-                field_widget = widgets.HTML(value = "<b>{}</b>".format(html.escape(field)))
-                field_box = widgets.Box(children=[field_widget], layout=self.field_box_layout)
-                slot_widget_list = self._value_widget_list(value)
-                slot_box = widgets.Box(children=slot_widget_list, layout=self.slot_box_layout)
-                grid_content_boxes.extend([field_box, slot_box])
-        content = widgets.GridBox(layout=self.grid_container_layout, children=grid_content_boxes)
-        
-        self.accordion.children = list(self.accordion.children) + [content]
-        self.accordion.set_title(len(self.element_list), header)
-        self.element_id_to_index[element_descriptor.element_id] = len(self.element_list)
-        self.element_list.append(element_descriptor)
-
+        return header, field_values
+    
+    def _do_retrieve_batch(self, element, field_values):
+        self.osmc.retrieve_batch([element_descriptor
+            for field,value in field_values.items()
+            if (value)
+            for element_descriptor in self._value_element_descriptor_list(value)
+        ])
     def _value_element_descriptor_list(self, value):
         import collections
         if isinstance(value, str):
@@ -249,51 +214,32 @@ class ElementInfoWidget:
         else:
             return []
 
-    def _value_widget_list(self, value):
+    def _to_hashable_identifier(self, element) -> Hashable:
+        return element.element_id
+
+    def _to_field_display_name(self, element, field) -> str:
+        return field
+
+    def _value_widget_list(self, element, field, value) -> List[Widget]:
         import collections
         if isinstance(value, str):
-            return [widgets.Label(value=value, layout=self.slot_item_layout)]#'"{}"'.format(value))
+            return [self._create_value_widget_attribute(value)]#'"{}"'.format(value))
         elif isinstance(value, collections.abc.Sequence): # test string-ness before this
             flat_list_widgets = [ widget
                 for item in value 
-                for widget in self._value_widget_list(item)
+                for widget in self._value_widget_list(element, field, item)
             ]
             return flat_list_widgets
         elif isinstance(value, dict) and '@id' in value:
             referred_element = self._element_descriptor_for_id(value['@id'])
             short_text = self.osmc.element_short_string(referred_element)
-            button = widgets.Button(
-                description=short_text,
-                #disabled=False,
-                button_style='info', # 'primary', 'success', 'info', 'warning', 'danger' or ''
-                #icon='check',
-                tooltip='Click to open pane for element {} found at {}'.format(short_text, referred_element.to_descriptor_str()),
-                layout=self.slot_item_layout
-            )
-            button.on_click(lambda b: self.show_element_pane(referred_element))
-            return [button]
+            long_text = 'Click to open pane for element {} found at {}'.format(short_text, referred_element.to_descriptor_str())
+            return [self._create_value_widget_reference(referred_element, short_text, long_text)]
         else:
-            return [widgets.Label(value=value, layout=self.slot_item_layout)]
+            return [self._create_value_widget_attribute(value)]
 
     def _element_descriptor_for_id(self, element_id):
         if element_id not in self.element_id_to_descriptor:
             self.element_id_to_descriptor[element_id] = self.initial_element.resolve_reference(element_id)
         return self.element_id_to_descriptor[element_id]
 
-    def show_element_pane(self, element_descriptor, highlight=True):
-        if element_descriptor.element_id not in self.element_id_to_index:
-            self._add_element_pane(element_descriptor)
-        if highlight:
-            self.accordion.selected_index = self.element_id_to_index[element_descriptor.element_id]
-        
-    def selected_element(self):
-        if self.accordion.selected_index is None:
-            return None
-        else:
-            return self.element_list[self.accordion.selected_index]
-
-    def _repr_html_(self):
-        self.display()    
-          
-    def display(self):
-        display(self.accordion)

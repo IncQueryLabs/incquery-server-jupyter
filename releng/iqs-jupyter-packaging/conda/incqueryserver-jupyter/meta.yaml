@@ -23,6 +23,7 @@ requirements:
     - incqueryserver-api-python-client
     - ipywidgets
     - requests
+    - mms-python-client
 
 test:
   imports:

@@ -77,6 +77,11 @@ def _monkey_patch_element_in_compartment_descriptor_repr_html(self):
 
 
 
+def _monkey_patch_element_in_compartment_descriptor_resolve_reference(self, target_element_relative_id):
+    return iqs_client.ElementInCompartmentDescriptor(
+        compartment_uri     = self.compartment_uri,
+        relative_element_id = target_element_relative_id
+    )
 
 def _monkey_patch_model_compartment_get_element_in_compartment_by_id(self, relative_element_id):
     return iqs_client.ElementInCompartmentDescriptor(
@@ -285,6 +290,8 @@ def _monkey_patch_query_execution_response_to_html(self):
 
 def _do_monkey_patching():
     iqs_client.ElementInCompartmentDescriptor._repr_html_ = _monkey_patch_element_in_compartment_descriptor_repr_html
+    iqs_client.ElementInCompartmentDescriptor.resolve_reference = _monkey_patch_element_in_compartment_descriptor_resolve_reference
+
     iqs_client.ModelCompartment.get_element_in_compartment_by_id = _monkey_patch_model_compartment_get_element_in_compartment_by_id
     iqs_client.ModelCompartment.is_loaded_by_server = _monkey_patch_model_compartment_is_loaded_by_server
     

@@ -31,6 +31,7 @@ from iqs_jupyter.core_extensions import *
 
 if 'MmsRepositoryApi' in dir(iqs_client):
     from iqs_jupyter.mms_extensions import *
+    from iqs_jupyter.mms_direct_extensions import *
     
 if 'RepositoryApi' in dir(iqs_client):
     from iqs_jupyter.twc_extensions import *

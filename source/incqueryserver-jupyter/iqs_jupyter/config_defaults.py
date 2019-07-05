@@ -38,6 +38,10 @@ default_twc_osmc_address  : str = None
 default_twc_osmc_username : str = None
 default_twc_osmc_password : str = None
 
+default_mms_address  : str = None
+default_mms_username : str = None
+default_mms_password : str = None
+
 
 # try to override from env variables
 
