@@ -158,7 +158,22 @@ class MMSHelpers:
         raw_element_content = self.retrieve(element)
         return _mms_element_short_string(element, raw_element_content)
         
-    def show_element_info_widget(self, element, **kwargs):
+    def show_element_info_widget(self, 
+                                 element, #element_id or element_in_compartment
+                                 org_id=None,
+                                 project_id=None,
+                                 ref_id=None,
+                                 commit_id=None, 
+                                 **kwargs):
+        if (org_id and project_id and ref_id and commit_id):
+            commit = iqs_client.MMSCommitDescriptor(
+                org_id=org_id, project_id=project_id, ref_id=ref_id, commit_id=commit_id
+            )
+            element = iqs_client.ElementInCompartmentDescriptor(
+                compartment_uri = commit.to_compartment_uri(),
+                relative_element_id = element  # assume `element` is relative element id
+            )            
+        
         return MMSElementInfoWidget(mms_helper=self, initial_element=element, **kwargs)
         
 
