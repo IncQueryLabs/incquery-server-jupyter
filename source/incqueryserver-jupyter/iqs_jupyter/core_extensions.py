@@ -157,7 +157,7 @@ def _monkey_patch_generic_validation_results_repr_html(self):
                         <th>Rule name</th>
                         <th>Message</th>
                         <th>Element type</th>
-                        <!-- <th>Element name</th> -->
+                        <th>Element name</th>
                         <th>Element</th>
                     </tr>
                 </thead>
@@ -176,7 +176,7 @@ def _monkey_patch_generic_validation_results_repr_html(self):
                         html.escape(diag_entry.constraint_element_name), 
                         html.escape(diag_entry.message), 
                         html.escape(diag_entry.matching_element_type), 
-                        # html.escape(diag_entry.matching_element_name), 
+                        html.escape(diag_entry.matching_element_name), 
                         diag_entry.matching_element._repr_html_()
                     ]
                 ])
