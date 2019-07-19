@@ -227,6 +227,26 @@ class MMCCommitSelectorWidget:
 
 # monkey patch section
 
+
+def _monkey_patch_static_mms_commit_descriptor_from_compartment_uri_or_none(compartment_uri):
+    segments = compartment_uri.split('/')
+    if (
+        9 != len(segments) or
+        segments[0] != "mms-index:" or
+        segments[1] != "orgs"       or
+        segments[3] != "projects"   or
+        segments[5] != "refs"       or
+        segments[7] != "commits"    
+    ):
+        return None
+    
+    return iqs_client.MMSCommitDescriptor(
+        org_id       = segments[2], 
+        project_id   = segments[4], 
+        ref_id       = segments[6], 
+        commit_id    = segments[8], 
+    )
+    
 def _monkey_patch_mms_commit_to_compartment_uri(self):
     return "mms-index:/orgs/{}/projects/{}/refs/{}/commits/{}".format(
         self.org_id,
@@ -238,10 +258,12 @@ def _monkey_patch_mms_commit_to_compartment_uri(self):
 def _monkey_patch_mms_commit_to_model_compartment(self):
     return iqs_client.ModelCompartment(compartment_uri=self.to_compartment_uri())
 
+
 def _monkey_patch_jupytertools_mms_commit_selector_widget(self, **kwargs):
     return MMCCommitSelectorWidget(iqs=self._iqs, **kwargs)
 
 def _do_monkey_patching():
+    iqs_client.MMSCommitDescriptor.from_compartment_uri_or_none = staticmethod(_monkey_patch_static_mms_commit_descriptor_from_compartment_uri_or_none)
     iqs_client.MMSCommitDescriptor.to_compartment_uri = _monkey_patch_mms_commit_to_compartment_uri
     iqs_client.MMSCommitDescriptor.to_model_compartment = _monkey_patch_mms_commit_to_model_compartment
     

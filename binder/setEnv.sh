@@ -14,3 +14,7 @@ export IQS_JUPYTER_default_mms_org=9ff6af30-af8a-4f9d-a26b-499010ba5b6e
 export IQS_JUPYTER_default_mms_project=PROJECT-0e791c0e-16fe-422f-8f85-462ab035ce99
 export IQS_JUPYTER_default_mms_ref=master
 export IQS_JUPYTER_default_mms_commit=0e4c90e2-ee9d-4d7e-9d90-e7fb7bb2c0c8
+
+export IQS_JUPYTER_default_mms_address=https://mms.openmbee.org/alfresco/service
+export IQS_JUPYTER_default_mms_username=openmbeeguest
+export IQS_JUPYTER_default_mms_password=guest

@@ -77,6 +77,11 @@ def _monkey_patch_element_in_compartment_descriptor_repr_html(self):
 
 
 
+def _monkey_patch_element_in_compartment_descriptor_resolve_reference(self, target_element_relative_id):
+    return iqs_client.ElementInCompartmentDescriptor(
+        compartment_uri     = self.compartment_uri,
+        relative_element_id = target_element_relative_id
+    )
 
 def _monkey_patch_model_compartment_get_element_in_compartment_by_id(self, relative_element_id):
     return iqs_client.ElementInCompartmentDescriptor(
@@ -152,7 +157,7 @@ def _monkey_patch_generic_validation_results_repr_html(self):
                         <th>Rule name</th>
                         <th>Message</th>
                         <th>Element type</th>
-                        <!-- <th>Element name</th> -->
+                        <th>Element name</th>
                         <th>Element</th>
                     </tr>
                 </thead>
@@ -171,7 +176,7 @@ def _monkey_patch_generic_validation_results_repr_html(self):
                         html.escape(diag_entry.constraint_element_name), 
                         html.escape(diag_entry.message), 
                         html.escape(diag_entry.matching_element_type), 
-                        # html.escape(diag_entry.matching_element_name), 
+                        html.escape(diag_entry.matching_element_name), 
                         diag_entry.matching_element._repr_html_()
                     ]
                 ])
@@ -184,12 +189,15 @@ def _monkey_patch_generic_validation_results_repr_html(self):
         len(diag_entries),
         table_html
     )
-#     return '<span title="{}">Validation results <i>(see hover for details)</i></span> <ul>{}</ul>'.format(
-#         html.escape(self.to_str()),
-#         "\n".join([
-#             "<li>{} ({}) {}</li>".format(
-#                 html.escape(diag_type), 
-#                 str(diag_count),
+    
+def _monkey_patch_validation_diagnostics_reps_html(self):
+    return '<span title="{}">Validation results summary <i>(see hover for details)</i></span> <ul>{}</ul>'.format(
+        html.escape(self.to_str()),
+        "\n".join([
+            "<li>{} ({}) {}</li>".format(
+                html.escape(diag_type), 
+                str(diag_count),
+                ""
 #                 "" if not diag_count else "<ul>{}</ul>".format(
 #                     "\n".join([
 #                         '<li>{}</li>'.format(
@@ -199,10 +207,10 @@ def _monkey_patch_generic_validation_results_repr_html(self):
 #                         if rule.severity == diag_type and rule.matching_elements
 #                     ])
 #                 )
-#             )
-#             for diag_type, diag_count in self.diagnostics.to_dict().items()
-#         ])
-#     )
+            )
+            for diag_type, diag_count in self.to_dict().items()
+        ])
+    )
     
 def _monkey_patch_generic_response_message_repr_html_(self):
     return '<span title="{}">{} <i>(see hover for details)</i></span>'.format(html.escape(self.to_str()), html.escape(self.message))
@@ -285,6 +293,8 @@ def _monkey_patch_query_execution_response_to_html(self):
 
 def _do_monkey_patching():
     iqs_client.ElementInCompartmentDescriptor._repr_html_ = _monkey_patch_element_in_compartment_descriptor_repr_html
+    iqs_client.ElementInCompartmentDescriptor.resolve_reference = _monkey_patch_element_in_compartment_descriptor_resolve_reference
+
     iqs_client.ModelCompartment.get_element_in_compartment_by_id = _monkey_patch_model_compartment_get_element_in_compartment_by_id
     iqs_client.ModelCompartment.is_loaded_by_server = _monkey_patch_model_compartment_is_loaded_by_server
     
@@ -301,6 +311,7 @@ def _do_monkey_patching():
     iqs_client.GenericValidationResults.to_data_frame = _monkey_patch_generic_validation_results_to_data_frame
     iqs_client.GenericValidationResults._repr_html_ = _monkey_patch_generic_validation_results_repr_html
     iqs_client.GenericValidationRule._repr_html_ = _monkey_patch_generic_validation_rule_repr_html
+    iqs_client.ValidationDiagnostics._repr_html_ = _monkey_patch_validation_diagnostics_reps_html
     iqs_client.TypedElementInCompartmentDescriptor._repr_html_ = _monkey_patch_typed_element_in_compartment_repr_html
 
 _do_monkey_patching()
