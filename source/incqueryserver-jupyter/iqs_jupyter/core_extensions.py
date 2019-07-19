@@ -189,12 +189,15 @@ def _monkey_patch_generic_validation_results_repr_html(self):
         len(diag_entries),
         table_html
     )
-#     return '<span title="{}">Validation results <i>(see hover for details)</i></span> <ul>{}</ul>'.format(
-#         html.escape(self.to_str()),
-#         "\n".join([
-#             "<li>{} ({}) {}</li>".format(
-#                 html.escape(diag_type), 
-#                 str(diag_count),
+    
+def _monkey_patch_validation_diagnostics_reps_html(self):
+    return '<span title="{}">Validation results summary <i>(see hover for details)</i></span> <ul>{}</ul>'.format(
+        html.escape(self.to_str()),
+        "\n".join([
+            "<li>{} ({}) {}</li>".format(
+                html.escape(diag_type), 
+                str(diag_count),
+                ""
 #                 "" if not diag_count else "<ul>{}</ul>".format(
 #                     "\n".join([
 #                         '<li>{}</li>'.format(
@@ -204,10 +207,10 @@ def _monkey_patch_generic_validation_results_repr_html(self):
 #                         if rule.severity == diag_type and rule.matching_elements
 #                     ])
 #                 )
-#             )
-#             for diag_type, diag_count in self.diagnostics.to_dict().items()
-#         ])
-#     )
+            )
+            for diag_type, diag_count in self.to_dict().items()
+        ])
+    )
     
 def _monkey_patch_generic_response_message_repr_html_(self):
     return '<span title="{}">{} <i>(see hover for details)</i></span>'.format(html.escape(self.to_str()), html.escape(self.message))
@@ -308,6 +311,7 @@ def _do_monkey_patching():
     iqs_client.GenericValidationResults.to_data_frame = _monkey_patch_generic_validation_results_to_data_frame
     iqs_client.GenericValidationResults._repr_html_ = _monkey_patch_generic_validation_results_repr_html
     iqs_client.GenericValidationRule._repr_html_ = _monkey_patch_generic_validation_rule_repr_html
+    iqs_client.ValidationDiagnostics._repr_html_ = _monkey_patch_validation_diagnostics_reps_html
     iqs_client.TypedElementInCompartmentDescriptor._repr_html_ = _monkey_patch_typed_element_in_compartment_repr_html
 
 _do_monkey_patching()
