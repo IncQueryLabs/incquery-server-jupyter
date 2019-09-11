@@ -208,7 +208,7 @@ class MMCCommitSelectorWidget:
                 self.project_widget.index != 0 and
                 self.org_widget.index != 0
         ):
-            return iqs_client.MMSCommitDescriptor(
+            return iqs_client.MMSCommitDescriptor.from_fields(
                 name=self.commit_map[self.commit_widget.value]['name'],
                 commit_id=self.commit_widget.value,
                 ref_id=self.ref_widget.value,
@@ -241,10 +241,11 @@ def _monkey_patch_static_mms_commit_descriptor_from_compartment_uri_or_none(comp
         return None
     
     return iqs_client.MMSCommitDescriptor(
-        org_id       = segments[2], 
-        project_id   = segments[4], 
-        ref_id       = segments[6], 
-        commit_id    = segments[8], 
+        org_id          = segments[2], 
+        project_id      = segments[4], 
+        ref_id          = segments[6], 
+        commit_id       = segments[8],
+        compartment_uri = compartment_uri
     )
     
 def _monkey_patch_mms_commit_to_compartment_uri(self):
@@ -253,6 +254,22 @@ def _monkey_patch_mms_commit_to_compartment_uri(self):
         self.project_id,
         self.ref_id,
         self.commit_id
+    )
+def _mms_compartment_uri(org_id, project_id, ref_id, commit_id):
+    return "mms-index:/orgs/{}/projects/{}/refs/{}/commits/{}".format(
+        org_id,
+        project_id,
+        ref_id,
+        commit_id
+    )
+def _monkey_patch_static_mms_commit_descriptor_from_fields(org_id, project_id, ref_id, commit_id, name = None):
+    return iqs_client.MMSCommitDescriptor(
+        name=name,
+        commit_id=commit_id,
+        ref_id=ref_id,
+        project_id=project_id,
+        org_id=org_id,
+        compartment_uri=_mms_compartment_uri(org_id, project_id, ref_id, commit_id)
     )
 
 def _monkey_patch_mms_commit_to_model_compartment(self):
@@ -264,6 +281,7 @@ def _monkey_patch_jupytertools_mms_commit_selector_widget(self, **kwargs):
 
 def _do_monkey_patching():
     iqs_client.MMSCommitDescriptor.from_compartment_uri_or_none = staticmethod(_monkey_patch_static_mms_commit_descriptor_from_compartment_uri_or_none)
+    iqs_client.MMSCommitDescriptor.from_fields = staticmethod(_monkey_patch_static_mms_commit_descriptor_from_fields)
     iqs_client.MMSCommitDescriptor.to_compartment_uri = _monkey_patch_mms_commit_to_compartment_uri
     iqs_client.MMSCommitDescriptor.to_model_compartment = _monkey_patch_mms_commit_to_model_compartment
     

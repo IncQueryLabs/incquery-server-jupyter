@@ -166,7 +166,7 @@ class MMSHelpers:
                                  commit_id=None, 
                                  **kwargs):
         if (org_id and project_id and ref_id and commit_id):
-            commit = iqs_client.MMSCommitDescriptor(
+            commit = iqs_client.MMSCommitDescriptor.from_fields(
                 org_id=org_id, project_id=project_id, ref_id=ref_id, commit_id=commit_id
             )
             element = iqs_client.ElementInCompartmentDescriptor(
