@@ -134,8 +134,9 @@ class MMCCommitSelectorWidget:
 
     def _setup_org(self, org_list):
         import collections
+        org_list_sorted = sorted(org_list, key=lambda org: org.name)
         self.org_map = collections.OrderedDict(
-            [(org.org_id, org) for org in org_list])
+            [(org.org_id, org) for org in org_list_sorted])
         self.org_widget.options = [('---- Select org', None)] + [
             (
                 "{} (ID: {})".format(org.name, _id),
@@ -150,7 +151,8 @@ class MMCCommitSelectorWidget:
 
     def _setup_project(self, project_list):
         import collections
-        self.project_map = collections.OrderedDict([(project.project_id, project) for project in project_list])
+        project_list_sorted = sorted(project_list, key=lambda project: project.name)
+        self.project_map = collections.OrderedDict([(project.project_id, project) for project in project_list_sorted])
         self.project_widget.options = [('---- Select project', None)] + [
             (
                 "{} (ID: {})".format(project.name, _id),
@@ -165,7 +167,8 @@ class MMCCommitSelectorWidget:
 
     def _setup_ref(self, ref_list):
         import collections
-        self.ref_map = collections.OrderedDict([(ref.ref_id, ref) for ref in ref_list])
+        ref_list_sorted = sorted(ref_list, key=lambda ref: ref.name)
+        self.ref_map = collections.OrderedDict([(ref.ref_id, ref) for ref in ref_list_sorted])
         self.ref_widget.options = [('---- Select ref', None)] + [
             (
                 "{} (ID: {})".format(ref.name, _id),
@@ -180,7 +183,8 @@ class MMCCommitSelectorWidget:
 
     def _setup_commit(self, commit_list):
         import collections
-        self.commit_map = collections.OrderedDict([(commit['commitId'], commit) for commit in commit_list])
+        commit_list_sorted = sorted(commit_list, key=lambda commit: commit['name'], reverse=True)
+        self.commit_map = collections.OrderedDict([(commit['commitId'], commit) for commit in commit_list_sorted])
         self.commit_widget.options = [('---- Select commit', None)] + [
             (
                 "{} (ID: {})".format(commit['name'], _id),
