@@ -424,6 +424,8 @@ class IQSConnectorWidget:
 
 # TODO auto-generate from dir(iqs_client.api) ? 
 _iqs_client_api_classes = {
+    'acquisition'       : "AcquisitionApi",
+    'async'             : "AsyncApi",
     'impact_analysis'   : "ImpactAnalysisApi",
     'in_memory_index'   : "InMemoryIndexApi",
     'persistent_index'  : "PersistentIndexApi",
@@ -434,7 +436,8 @@ _iqs_client_api_classes = {
     'validation'        : "ValidationApi",    
     'integration'       : "IntegrationApi",
     'mms_repository'    : "MmsRepositoryApi",
-    'experimental'      : "ExperimentalApi"
+    'experimental'      : "ExperimentalApi",
+    'demo'              : "DemoApi"
 }
 
 class IQSClient:

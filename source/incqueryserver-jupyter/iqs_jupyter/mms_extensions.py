@@ -134,8 +134,9 @@ class MMCCommitSelectorWidget:
 
     def _setup_org(self, org_list):
         import collections
+        org_list_sorted = sorted(org_list, key=lambda org: org.name)
         self.org_map = collections.OrderedDict(
-            [(org.org_id, org) for org in org_list])
+            [(org.org_id, org) for org in org_list_sorted])
         self.org_widget.options = [('---- Select org', None)] + [
             (
                 "{} (ID: {})".format(org.name, _id),
@@ -150,7 +151,8 @@ class MMCCommitSelectorWidget:
 
     def _setup_project(self, project_list):
         import collections
-        self.project_map = collections.OrderedDict([(project.project_id, project) for project in project_list])
+        project_list_sorted = sorted(project_list, key=lambda project: project.name)
+        self.project_map = collections.OrderedDict([(project.project_id, project) for project in project_list_sorted])
         self.project_widget.options = [('---- Select project', None)] + [
             (
                 "{} (ID: {})".format(project.name, _id),
@@ -165,7 +167,8 @@ class MMCCommitSelectorWidget:
 
     def _setup_ref(self, ref_list):
         import collections
-        self.ref_map = collections.OrderedDict([(ref.ref_id, ref) for ref in ref_list])
+        ref_list_sorted = sorted(ref_list, key=lambda ref: ref.name)
+        self.ref_map = collections.OrderedDict([(ref.ref_id, ref) for ref in ref_list_sorted])
         self.ref_widget.options = [('---- Select ref', None)] + [
             (
                 "{} (ID: {})".format(ref.name, _id),
@@ -180,7 +183,8 @@ class MMCCommitSelectorWidget:
 
     def _setup_commit(self, commit_list):
         import collections
-        self.commit_map = collections.OrderedDict([(commit['commitId'], commit) for commit in commit_list])
+        commit_list_sorted = sorted(commit_list, key=lambda commit: commit['name'], reverse=True)
+        self.commit_map = collections.OrderedDict([(commit['commitId'], commit) for commit in commit_list_sorted])
         self.commit_widget.options = [('---- Select commit', None)] + [
             (
                 "{} (ID: {})".format(commit['name'], _id),
@@ -208,7 +212,7 @@ class MMCCommitSelectorWidget:
                 self.project_widget.index != 0 and
                 self.org_widget.index != 0
         ):
-            return iqs_client.MMSCommitDescriptor(
+            return iqs_client.MMSCommitDescriptor.from_fields(
                 name=self.commit_map[self.commit_widget.value]['name'],
                 commit_id=self.commit_widget.value,
                 ref_id=self.ref_widget.value,
@@ -241,10 +245,11 @@ def _monkey_patch_static_mms_commit_descriptor_from_compartment_uri_or_none(comp
         return None
     
     return iqs_client.MMSCommitDescriptor(
-        org_id       = segments[2], 
-        project_id   = segments[4], 
-        ref_id       = segments[6], 
-        commit_id    = segments[8], 
+        org_id          = segments[2], 
+        project_id      = segments[4], 
+        ref_id          = segments[6], 
+        commit_id       = segments[8],
+        compartment_uri = compartment_uri
     )
     
 def _monkey_patch_mms_commit_to_compartment_uri(self):
@@ -253,6 +258,22 @@ def _monkey_patch_mms_commit_to_compartment_uri(self):
         self.project_id,
         self.ref_id,
         self.commit_id
+    )
+def _mms_compartment_uri(org_id, project_id, ref_id, commit_id):
+    return "mms-index:/orgs/{}/projects/{}/refs/{}/commits/{}".format(
+        org_id,
+        project_id,
+        ref_id,
+        commit_id
+    )
+def _monkey_patch_static_mms_commit_descriptor_from_fields(org_id, project_id, ref_id, commit_id, name = None):
+    return iqs_client.MMSCommitDescriptor(
+        name=name,
+        commit_id=commit_id,
+        ref_id=ref_id,
+        project_id=project_id,
+        org_id=org_id,
+        compartment_uri=_mms_compartment_uri(org_id, project_id, ref_id, commit_id)
     )
 
 def _monkey_patch_mms_commit_to_model_compartment(self):
@@ -264,6 +285,7 @@ def _monkey_patch_jupytertools_mms_commit_selector_widget(self, **kwargs):
 
 def _do_monkey_patching():
     iqs_client.MMSCommitDescriptor.from_compartment_uri_or_none = staticmethod(_monkey_patch_static_mms_commit_descriptor_from_compartment_uri_or_none)
+    iqs_client.MMSCommitDescriptor.from_fields = staticmethod(_monkey_patch_static_mms_commit_descriptor_from_fields)
     iqs_client.MMSCommitDescriptor.to_compartment_uri = _monkey_patch_mms_commit_to_compartment_uri
     iqs_client.MMSCommitDescriptor.to_model_compartment = _monkey_patch_mms_commit_to_model_compartment
     
