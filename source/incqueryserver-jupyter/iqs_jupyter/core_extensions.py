@@ -34,6 +34,8 @@ import iqs_client
 
 import iqs_jupyter.config_defaults as defaults
 import iqs_jupyter.tool_extension_point as ext_point
+from iqs_jupyter.helpers import cell_to_html as _cell_to_html
+from iqs_jupyter.helpers import dict_to_element as _dict_to_element
 
 # recognizing element-in-compartment descriptors in match results
 
@@ -53,18 +55,26 @@ def _recognize_element_in_compartment_descriptor(
 ext_point.element_dict_recognizers.append(_recognize_element_in_compartment_descriptor)
 
 
-def _dict_to_element(dict_or_attribute_value, url_provider=None):
-    if isinstance(dict_or_attribute_value, dict):
-        for recognizer in ext_point.element_dict_recognizers:
-            recognized = recognizer(dict_or_attribute_value)
-            if recognized:
-                if url_provider is not None:
-                    recognized.url = url_provider(recognized)
-                return recognized
-        # not recognized as an element, treated as raw dict    
-        return dict_or_attribute_value
+def _recognize_typed_element_in_compartment_descriptor(
+        dict_of_element : dict
+) -> Optional[iqs_client.TypedElementInCompartmentDescriptor]:
+    if "element" in dict_of_element:
+        return iqs_client.TypedElementInCompartmentDescriptor(
+            **dict(
+                (
+                    py_name, 
+                    _recognize_element_in_compartment_descriptor(dict_of_element[json_name]) 
+                        if py_name == "element" else dict_of_element[json_name]
+                ) 
+                for py_name, json_name in iqs_client.TypedElementInCompartmentDescriptor.attribute_map.items()
+            )
+        )
     else:
-        return dict_or_attribute_value
+        return None
+        
+ext_point.element_dict_recognizers.append(_recognize_typed_element_in_compartment_descriptor)
+
+
 
 
 ## monkey patch section
@@ -226,14 +236,6 @@ def _monkey_patch_query_fqn_list_repr_html_(self):
         return '<span title="{}">Listing {} queri(es): <i>(see hover for details)</i></span> <ul>{}</ul>'.format(
             html.escape(self.to_str()), str(len(ns_list)), list_body)
     return '<span title="{}">No queries <i>(see hover for details)</i></span>'.format(html.escape(self.to_str()))
-
-def _cell_to_html(cell):
-    if hasattr(cell, '_repr_html_'):
-        return cell._repr_html_()
-    elif isinstance(cell, str):
-        return html.escape(cell)
-    else:
-        return str(cell)
 
 def _monkey_patch_query_execution_response_to_html(self):
     count_report = '<span title="{}">{} match(es) of query{}{} <i>(see hover for details)</i></span>'.format(

@@ -33,6 +33,7 @@ ApiClientModule = collections.namedtuple(
 _api_client_modules = [
     ApiClientModule('api', 'iqs_client', {
         'async'             : "AsyncApi",
+        'analysis'          : 'AnalysisApi',
         'impact_analysis'   : "ImpactAnalysisApi",
         'in_memory_index'   : "InMemoryIndexApi",
         'persistent_index'  : "PersistentIndexApi",
