@@ -26,10 +26,14 @@ from iqs_jupyter.core_extensions import validation_color_scale
 
 
 def _monkey_patch_analysis_results_repr_html(self : iqs_client.AnalysisResults):
-    header_report = '<span title="{}">Results for model analysis <b>"{}"</b> ({}) <i>(see hover for details)</i></span>'.format(
-        html.escape(self.to_str()), 
+    escaped_id = html.escape(self.configuration.configuration_id)
+    header_report = '''
+        <h3>Results for model analysis <b>"{}"</b></h3>
+        <span title="{}">Analysis configuration id: {} <i>(see hover for details)</i></span>
+    '''.format(
         html.escape(self.configuration.configuration_name),
-        html.escape(self.configuration.configuration_id)
+        html.escape(self.to_str()), 
+        escaped_id
     )
     
     kpi_rows = "\n".join([
@@ -40,6 +44,7 @@ def _monkey_patch_analysis_results_repr_html(self : iqs_client.AnalysisResults):
         for kpi in self.kpi_values
     ])
     kpi_report = '''
+        <h4> KPIs</h4>
         <table border="1">
             <thead>
                 <tr style="text-align: right;">
@@ -51,7 +56,29 @@ def _monkey_patch_analysis_results_repr_html(self : iqs_client.AnalysisResults):
                 {}
             </tbody>
         </table>
-    '''.format(kpi_rows)
+    '''.format(
+        kpi_rows
+    )
+    
+    toc_rows = "\n".join([
+        '''
+            <li>{} by rule "<b>{}</b>"</li>
+        '''.format(
+            _marker_count_report(self.analysis_results[result_index]),
+            #escaped_id, str(result_index),
+            html.escape(self.analysis_results[result_index].configuration_rule.name)
+        ) 
+        for result_index in range(len(self.analysis_results))
+    ])
+    toc_report = '''
+        <h4>Individual analysis rules</h4>
+        <ul>
+            {}
+        </ul>
+    '''.format(
+        toc_rows
+    )
+
     
     individual_result_tables = "\n".join([
         '''
@@ -59,9 +86,9 @@ def _monkey_patch_analysis_results_repr_html(self : iqs_client.AnalysisResults):
             {}
             </div>
         '''.format(
-            individual_result_table._repr_html_()
+            self.analysis_results[result_index]._repr_html_("h4")
         ) 
-        for individual_result_table in self.analysis_results
+        for result_index in range(len(self.analysis_results))
     ])
     
     style = ""
@@ -71,23 +98,40 @@ def _monkey_patch_analysis_results_repr_html(self : iqs_client.AnalysisResults):
         {}
         {}
         {}
+        {}
         </div>
-    '''.format(header_report, style, kpi_report, individual_result_tables)
+    '''.format(header_report, style, kpi_report, toc_report, individual_result_tables)
 
-def _monkey_patch_analysis_result_repr_html(self : iqs_client.AnalysisResult):
-    marker_color = validation_color_scale.get(self.configuration_rule.severity.lower(), None)
+
+def _marker_count_report(analysis_result : iqs_client.AnalysisResult) -> str:
+    marker_color = validation_color_scale.get(analysis_result.configuration_rule.severity.lower(), None)
     marker_style_string = 'style="background-color:{}; color: bisque;"'.format(marker_color) if marker_color else ""
-    marker_count_report = '{} <span {}>{}</span> marker{}'.format(
-        str(len(self.matches)),
+    return '{} <span {}>{}</span> marker{}'.format(
+        str(len(analysis_result.matches)),
         marker_style_string,
-        html.escape(self.configuration_rule.severity),
-        "s" if 1 != len(self.matches) else ""
+        html.escape(analysis_result.configuration_rule.severity),
+        "s" if 1 != len(analysis_result.matches) else ""
     )
-    header_report = '<span title="{}">{} via rule <b>"{}"</b> ({}) <i>(see hover for details)</i></span>'.format(
+
+def _monkey_patch_analysis_result_repr_html(self : iqs_client.AnalysisResult, heading_lvl: str = 'h4', anchor : str = None):
+    anchor_tag = '<a name="{}"/>'.format(anchor) if anchor else ""
+    anchor_href = '<a href="#{}">#</a> '.format(anchor) if anchor else ""
+    subheader_report = '{}<span title="{}">{} via "{}" <i>(see hover for details)</i></span>'.format(
+        anchor_href,
         html.escape(self.to_str()), 
-        marker_count_report,
-        html.escape(self.configuration_rule.name),
+        _marker_count_report(self),
         html.escape(self.configuration_rule.query_fqn)
+    )
+    header_report = '''
+        {}
+        <{}>Results of rule <b>"{}"</b></{}>
+        {}
+    '''.format(
+        anchor_tag,
+        heading_lvl,
+        html.escape(self.configuration_rule.name),
+        heading_lvl,
+        subheader_report
     )
     if not self.matches:
         return header_report
