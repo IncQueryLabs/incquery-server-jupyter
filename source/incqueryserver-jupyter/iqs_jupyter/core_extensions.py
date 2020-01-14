@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from iqs_jupyter import api_composition
 '''
 Created on 2019-04-09
 
@@ -22,16 +22,20 @@ from typing import Optional
 import html
 import collections
 
+
 import ipywidgets as widgets
 from IPython.display import display
 
 import iqs_client
+
 
 ## TODO separate TWC-specific, MMS-specific and core parts into separate files if possible (re-export of core?)
 ## TODO refactor: pull up TWC-independent parts of (a) revision selector widget (retrofit mms commit selector) and (b) OSMC element info widget
 
 import iqs_jupyter.config_defaults as defaults
 import iqs_jupyter.tool_extension_point as ext_point
+from iqs_jupyter.helpers import cell_to_html as _cell_to_html
+from iqs_jupyter.helpers import dict_to_element as _dict_to_element
 
 # recognizing element-in-compartment descriptors in match results
 
@@ -51,18 +55,26 @@ def _recognize_element_in_compartment_descriptor(
 ext_point.element_dict_recognizers.append(_recognize_element_in_compartment_descriptor)
 
 
-def _dict_to_element(dict_or_attribute_value, url_provider=None):
-    if isinstance(dict_or_attribute_value, dict):
-        for recognizer in ext_point.element_dict_recognizers:
-            recognized = recognizer(dict_or_attribute_value)
-            if recognized:
-                if url_provider is not None:
-                    recognized.url = url_provider(recognized)
-                return recognized
-        # not recognized as an element, treated as raw dict    
-        return dict_or_attribute_value
+def _recognize_typed_element_in_compartment_descriptor(
+        dict_of_element : dict
+) -> Optional[iqs_client.TypedElementInCompartmentDescriptor]:
+    if "element" in dict_of_element:
+        return iqs_client.TypedElementInCompartmentDescriptor(
+            **dict(
+                (
+                    py_name, 
+                    _recognize_element_in_compartment_descriptor(dict_of_element[json_name]) 
+                        if py_name == "element" else dict_of_element[json_name]
+                ) 
+                for py_name, json_name in iqs_client.TypedElementInCompartmentDescriptor.attribute_map.items()
+            )
+        )
     else:
-        return dict_or_attribute_value
+        return None
+        
+ext_point.element_dict_recognizers.append(_recognize_typed_element_in_compartment_descriptor)
+
+
 
 
 ## monkey patch section
@@ -224,14 +236,6 @@ def _monkey_patch_query_fqn_list_repr_html_(self):
         return '<span title="{}">Listing {} queri(es): <i>(see hover for details)</i></span> <ul>{}</ul>'.format(
             html.escape(self.to_str()), str(len(ns_list)), list_body)
     return '<span title="{}">No queries <i>(see hover for details)</i></span>'.format(html.escape(self.to_str()))
-
-def _cell_to_html(cell):
-    if hasattr(cell, '_repr_html_'):
-        return cell._repr_html_()
-    elif isinstance(cell, str):
-        return html.escape(cell)
-    else:
-        return str(cell)
 
 def _monkey_patch_query_execution_response_to_html(self):
     count_report = '<span title="{}">{} match(es) of query{}{} <i>(see hover for details)</i></span>'.format(
@@ -409,49 +413,13 @@ class IQSConnectorWidget:
 
 
 
-# def _iqs_core_api_initilizer(iqs):
-#     self.impact_analysis = iqs_client.ImpactAnalysisApi(core_api_client_iqs)
-#     self.in_memory_index = iqs_client.InMemoryIndexApi(core_api_client_iqs)
-#     self.persistent_index = iqs_client.PersistentIndexApi(core_api_client_iqs)
-#     self.queries = iqs_client.QueriesApi(core_api_client_iqs)
-#     self.query_execution = iqs_client.QueryExecutionApi(core_api_client_iqs)
-#     self.repository = iqs_client.RepositoryApi(core_api_client_iqs)
-#     self.server_management = iqs_client.ServerManagementApi(core_api_client_iqs)
-#     self.validation = iqs_client.ValidationApi(core_api_client_iqs)    
-#     self.integration = iqs_client.IntegrationApi(core_api_client_iqs)
-#     self.mms_repository = iqs_client.MmsRepositoryApi(core_api_client_iqs)
-#     self.experimental = iqs_client.ExperimentalApi(core_api_client_iqs)
-
-# TODO auto-generate from dir(iqs_client.api) ? 
-_iqs_client_api_classes = {
-    'acquisition'       : "AcquisitionApi",
-    'async'             : "AsyncApi",
-    'impact_analysis'   : "ImpactAnalysisApi",
-    'in_memory_index'   : "InMemoryIndexApi",
-    'persistent_index'  : "PersistentIndexApi",
-    'queries'           : "QueriesApi",
-    'query_execution'   : "QueryExecutionApi",
-    'repository'        : "RepositoryApi",
-    'server_management' : "ServerManagementApi",
-    'validation'        : "ValidationApi",    
-    'integration'       : "IntegrationApi",
-    'mms_repository'    : "MmsRepositoryApi",
-    'experimental'      : "ExperimentalApi",
-    'demo'              : "DemoApi"
-}
 
 class IQSClient:
     def __init__(
         self,
-        configuration
+        root_configuration
     ):
-        core_api_client_iqs = iqs_client.ApiClient(configuration)
-        for api_field_name, api_class_name in _iqs_client_api_classes.items():
-            if api_class_name in dir(iqs_client): # there might be api classes presently missing / disabled
-                api_class = getattr(iqs_client, api_class_name)
-                api_object = api_class(core_api_client_iqs)
-                setattr(self, api_field_name, api_object)
-        
+        api_composition.decorate_iqs_client(self, root_configuration)
         self.jupyter_tools = ext_point.IQSJupyterTools(self)
 
 
