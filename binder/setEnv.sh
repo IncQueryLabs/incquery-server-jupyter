@@ -1,7 +1,7 @@
 #!/bin/bash
 
 IQS_DEMO_HOST=https://openmbee.incquery.io
-CLIENT_SDIST_SUFFIX=/client/incqueryserver-api-python-client-0.13.0.tar.gz
+CLIENT_SDIST_SUFFIX=/client/incqueryserver-api-python-client-0.14.0.tar.gz 
 
 CLIENT_SDIST_ARCHIVE_LOC=${IQS_DEMO_HOST}${CLIENT_SDIST_SUFFIX}
 
