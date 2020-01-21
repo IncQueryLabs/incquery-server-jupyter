@@ -151,11 +151,12 @@ def _monkey_patch_generic_validation_results_to_list_of_diagnostic_items(self):
     return [
         ValidationDiagnosticItem(
             rule.constraint.type, rule.constraint.name, rule.constraint.element.relative_element_id, rule.constraint.element,
-            rule.severity, rule.message,
-            typed_diag_element.type, typed_diag_element.name, typed_diag_element.element.relative_element_id, typed_diag_element.element
+            rule.severity, validation_marker.message,
+            validation_marker.matching_element.type, validation_marker.matching_element.name, 
+            validation_marker.matching_element.element.relative_element_id, validation_marker.matching_element.element
         )
         for rule in self.rules
-        for typed_diag_element in rule.matching_elements
+        for validation_marker in rule.matching_elements
     ]
     
 def _monkey_patch_generic_validation_results_repr_html(self):
