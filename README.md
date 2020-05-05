@@ -16,6 +16,8 @@ Requires [IncQuery Server (IQS)](https://incquery.io) to operate.
 
 Click the __binder__ shield above to spin up a deployment publicly hosted on [MyBinder](https://mybinder.org/), with wired-in guest access to [a public IQS demo instance](https://openmbee.incquery.io) and [the OpenMBEE public MMS model repository](https://mms.openmbee.org/).
 
+**Warning:** The resulting notebook will not be persistent, it cannot be shared and it can be deleted anytime! This usage is recommended only for one-time, short-lived experiments!
+
 
 ## Getting started 
 
