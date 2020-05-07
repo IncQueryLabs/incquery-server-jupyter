@@ -55,9 +55,13 @@ The above instructions mostly apply here as well. However, instead of issuing `c
 
 Specifying `install -e` will install these pip packages in "editable" mode, similarly to `conda develop`.
 
+Note that since we rely on `conda` packaging by default, the dependencies may have to be installed manually in case of using `pip`.
+
 ### Additional dependencies
 
 The demo notebook uses `ploty` and `cufflinks` to demonstrate possible applications of the client extensions package. It is not recommended to install `cufflinks-py` using conda, as conda-forge seems to host an obsolete version not compatible with the demo; simply issue `pip install cufflinks` from the Anaconda console instead. 
+
+The direct connection to the MMS server additionally requires the installation of `mms-python-client`.
 
 ## Running the notebook
 
