@@ -59,7 +59,7 @@ Note that since we rely on `conda` packaging by default, the dependencies may ha
 
 ### Additional dependencies
 
-The demo notebook uses `ploty` and `cufflinks` to demonstrate possible applications of the client extensions package. It is not recommended to install `cufflinks-py` using conda, as conda-forge seems to host an obsolete version not compatible with the demo; simply issue `pip install cufflinks` from the Anaconda console instead. 
+The demo notebook uses `plotly` and `cufflinks` to demonstrate possible applications of the client extensions package. It is not recommended to install `cufflinks-py` using conda, as conda-forge seems to host an obsolete version not compatible with the demo; simply issue `pip install cufflinks` from the Anaconda console instead. 
 
 The direct connection to the MMS server additionally requires the installation of `mms-python-client`.
 
