@@ -1,9 +1,9 @@
 package:
-  name: incqueryserver-api-python-client 
+  name: incqueryserver-connector-api-python-client 
   version: "0.16.0"
 
 source:
-  path: ../../../../source-gen/incqueryserver-api-python-client
+  path: ../../../../source-gen/incqueryserver-connector-api-python-client
   
   
 build:
@@ -28,7 +28,7 @@ requirements:
 
 test:
   imports:
-    - iqs_client
+    - iqs_connector_client
 
 about:
   home: https://incquery.io
