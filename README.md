@@ -45,9 +45,11 @@ If you already have Python 3.7+, you can alternatively use the `pip` package man
 
 ### Installing the Python-based IQS API client
 
+You must install the generated Python client package by executing ONE of the following options.
+
 #### Release version from public repository 
 
-Currently builds are available [from PyPI](https://test.pypi.org/project/incqueryserver-api-python-client/).
+Currently builds are available [from PyPI](https://pypi.org/project/incqueryserver-api-python-client/).
 
         pip install incqueryserver-api-python-client
 
@@ -66,7 +68,7 @@ Locate the Python client library hosted at your IQS installation; e.g. the libra
 
 1. Make sure you have OpenAPI Generator. We have verified that OpenAPI 3.3.4 works; OpenAPI 4+ has some issues. Just download the [.jar](https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/3.3.4/openapi-generator-cli-3.3.4.jar) from the [Mvn Repository](https://mvnrepository.com/artifact/org.openapitools/openapi-generator-cli/3.3.4).   
 1. Locate the OpenAPI definition file (`.yaml`) shipped with your IQS instance. You will find the link in the "*Swagger UI*" tab of the *IncQuery Server Web Console*; e.g. the API definition of the public demo instance is available [here](https://openmbee.incquery.io/iqs4twc.yaml).
-1. Within the OpenAPI definition file, look for a line looking like `version: 0.16.0` near the top, below `info:`. This version number is the API version of your IQS installation.
+1. Within the OpenAPI definition file, find a line that looks like `version: 0.16.0`; it will be found near the top, below `info:`. This version number is the API version of your IQS installation.
 1. Generate a Python API into `${this-git-repo}/source-gen/incqueryserver-api-python-client` using the following command line:
  
             java -jar ${path-to-OpenAPI/openapi-generator-cli-3.3.4.jar} generate -i ${path-to-API-definition-yaml} -g python -o ${this-git-repo}/source-gen/incqueryserver-api-python-client -DpackageVersion="${API-version-of-your-IQS-instance}" -DpackageUrl="https://incquery.io" -DpackageName=iqs_client -DprojectName=incqueryserver-api-python-client  
@@ -85,9 +87,11 @@ Note: the generated client will only include the Acquisition API in versions 0.1
 
 ### Installing the Jupyter-specific client extensions
 
+You must install the Jupyter support itself by executing ONE of the following options.
+
 #### Release version from public repository 
 
-Currently builds are available [from PyPI](https://test.pypi.org/project/incqueryserver-api-python-client/).
+Currently builds are available [from PyPI](https://pypi.org/project/incqueryserver-jupyter/).
 
         pip install incqueryserver-jupyter
 
@@ -98,8 +102,8 @@ Conda package builds will be available in the future.
 Ensure that the non-generated Jupyter-specific client extensions are available to notebooks by executing ONE of the following options: 
    * For end users: (in the Anaconda console environment) build a conda package from the client extensions sources, then install it:
 
-            conda build ${this-git-repo}/releng/iqs-jupyter-packaging/conda/incqueryserver-jupyter
-            conda install --use-local incqueryserver-jupyter
+            conda build -c conda-forge ${this-git-repo}/releng/iqs-jupyter-packaging/conda/incqueryserver-jupyter
+            conda install -c conda-forge --use-local incqueryserver-jupyter
 
    * For developers: issue the following command to perform a "developer" install directly from the source project; changes to the source will be reflected immediately to newly (re)started Python interpreters / Jupyter kernels (previously started kernels that already executed the `import` will keep the old content until restarted).
 
@@ -134,7 +138,7 @@ Run [test_iqs_client.py](https://github.com/IncQueryLabs/incquery-server-jupyter
 
 The demo notebook uses `plotly` and `cufflinks` to demonstrate possible applications of the client extensions package. It is not recommended to install `cufflinks-py` using conda, as conda-forge seems to host an obsolete version not compatible with the demo; simply issue `pip install cufflinks` from the Anaconda console instead. 
 
-The direct connection to the MMS server additionally requires the installation of `mms-python-client`.
+The direct connection to the MMS server additionally requires the installation of `mms-python-client`; you might have missed this dependency if you installed the Jupyter extensions in development mode.
 
 ## Running the notebook
 
@@ -194,9 +198,9 @@ A similar shell script can be used in case of *nix systems; a docker file might 
       
                 iqs = iqs_jupyter.connect()
        
-   1. You can now interact with the IQS instance. For instance, if your IQS installation is connected to TWC, browse for a TWC revision using 
+   1. You can now interact with the IQS instance. For example, if your IQS installation is connected to MMS, browse for an MMS commit using 
    
-            revision_selector = iqs.jupyter_tools.twc_revision_selector_widget()
+            commit_selector = iqs.jupyter_tools.mms_commit_selector_widget()
    
    1. Access the full JSON/RPC API of IQS in the form of (you may use TAB completion):
    
