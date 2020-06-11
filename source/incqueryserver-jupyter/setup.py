@@ -28,7 +28,7 @@ version = {}
 with open("iqs_jupyter/about.py") as fp:
     exec(fp.read(), version)
 
-REQUIRES = ["incqueryserver-api-python-client"]
+REQUIRES = ["incqueryserver-api-python-client", "mms-python-client"]
 
 setuptools.setup(
     name="incqueryserver-jupyter",
@@ -43,7 +43,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: Apache License",
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
 )
