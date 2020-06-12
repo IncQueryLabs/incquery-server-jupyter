@@ -69,6 +69,16 @@ Locate the Python client library hosted at your IQS installation; e.g. the libra
 1. Make sure you have OpenAPI Generator. We have verified that OpenAPI 3.3.4 works; OpenAPI 4+ has some issues. Just download the [.jar](https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/3.3.4/openapi-generator-cli-3.3.4.jar) from the [Mvn Repository](https://mvnrepository.com/artifact/org.openapitools/openapi-generator-cli/3.3.4).   
 1. Locate the OpenAPI definition file (`.yaml`) shipped with your IQS instance. You will find the link in the "*Swagger UI*" tab of the *IncQuery Server Web Console*; e.g. the API definition of the public demo instance is available [here](https://openmbee.incquery.io/iqs4twc.yaml).
 1. Within the OpenAPI definition file, find a line that looks like `version: 0.16.0`; it will be found near the top, below `info:`. This version number is the API version of your IQS installation.
+1. At the end of the OpenAPI definition file, append a few lines (continuing the section `components:` and then adding a new section `security:`) to specify the authentication method of your IQS instance. For instance, in case of basic authentication, you would add these lines: 
+ 
+         securitySchemes:
+           basicAuth:
+             type: http
+             scheme: basic       
+       
+       security:
+         - basicAuth: []
+
 1. Generate a Python API into `${this-git-repo}/source-gen/incqueryserver-api-python-client` using the following command line:
  
             java -jar ${path-to-OpenAPI/openapi-generator-cli-3.3.4.jar} generate -i ${path-to-API-definition-yaml} -g python -o ${this-git-repo}/source-gen/incqueryserver-api-python-client -DpackageVersion="${API-version-of-your-IQS-instance}" -DpackageUrl="https://incquery.io" -DpackageName=iqs_client -DprojectName=incqueryserver-api-python-client  
