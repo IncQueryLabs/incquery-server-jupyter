@@ -1,6 +1,6 @@
 package:
   name: incqueryserver-jupyter
-  version: "0.15.0"
+  version: "0.16.0"
 
 source:
   path: ../../../../source/incqueryserver-jupyter

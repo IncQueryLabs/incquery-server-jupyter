@@ -32,6 +32,7 @@ ApiClientModule = collections.namedtuple(
 # TODO auto-generate from dir(iqs_client.api) + name mangling ? 
 _api_client_modules = [
     ApiClientModule('api', 'iqs_client', {
+        'acquisition'       : "AcquisitionApi",
         'async'             : "AsyncApi",
         'analysis'          : 'AnalysisApi',
         'impact_analysis'   : "ImpactAnalysisApi",
@@ -46,9 +47,6 @@ _api_client_modules = [
         'mms_repository'    : "MmsRepositoryApi",
         'experimental'      : "ExperimentalApi",
         'demo'              : "DemoApi"
-    }),
-    ApiClientModule('connector-api', 'iqs_connector_client', {
-        'acquisition'       : "AcquisitionApi"
     }),
 ]
 

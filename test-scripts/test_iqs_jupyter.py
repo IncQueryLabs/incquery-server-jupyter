@@ -10,7 +10,6 @@ class IQSClientTest(unittest.TestCase):
 
     def testImport(self):
         import iqs_client
-        import iqs_connector_client
 
 
     '''
