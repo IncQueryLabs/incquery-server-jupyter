@@ -1,6 +1,6 @@
 package:
   name: incqueryserver-connector-api-python-client 
-  version: "0.16.0"
+  version: "0.15.0"
 
 source:
   path: ../../../../source-gen/incqueryserver-connector-api-python-client

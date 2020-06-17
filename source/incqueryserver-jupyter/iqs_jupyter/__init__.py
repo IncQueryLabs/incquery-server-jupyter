@@ -42,9 +42,5 @@ if 'AnalysisApi' in dir(iqs_client):
 
 # namespace shortcut for API request/response classes
 from iqs_client import models as schema
-try:
-    from iqs_connector_client import models as connector_schema
-except ImportError:
-    pass
 
 
