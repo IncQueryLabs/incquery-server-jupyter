@@ -1,5 +1,5 @@
 jupyter_contrib_nbextensions
 ipywidgets
 cufflinks
-mms-python-client
+mms-python-client==3.4.2.1
 
