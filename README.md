@@ -155,6 +155,7 @@ Run [test_iqs_client.py](https://github.com/IncQueryLabs/incquery-server-jupyter
 The demo notebook uses `plotly` and `cufflinks` to demonstrate possible applications of the client extensions package. It is not recommended to install `cufflinks-py` using conda, as conda-forge seems to host an obsolete version not compatible with the demo; simply issue `pip install cufflinks` from the Anaconda console instead. 
 
 The direct connection to the MMS server additionally requires the installation of `mms-python-client`; you might have missed this dependency if you installed the Jupyter extensions in development mode.
+ * **CAUTION** pin to `mms-python-client==3.4.2.1` until https://github.com/Open-MBEE/mms-alfresco/issues/346 is resolved, see https://github.com/IncQueryLabs/incquery-server-jupyter/issues/35
 
 ## Running the notebook
 
