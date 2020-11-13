@@ -1,6 +1,6 @@
 package:
   name: incqueryserver-jupyter
-  version: "0.12.0"
+  version: "0.16.0"
 
 source:
   path: ../../../../source/incqueryserver-jupyter
@@ -17,6 +17,7 @@ requirements:
     - incqueryserver-api-python-client
     - ipywidgets
     - requests
+    - mms-python-client
 
   run:
     - python
