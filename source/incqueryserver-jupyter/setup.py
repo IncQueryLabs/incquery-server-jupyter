@@ -28,7 +28,7 @@ version = {}
 with open("iqs_jupyter/about.py") as fp:
     exec(fp.read(), version)
 
-REQUIRES = ["incqueryserver-api-python-client", "mms-python-client"]
+REQUIRES = ["incqueryserver-api-python-client=={}".format(version['__version__']), "mms-python-client", "ipywidgets"]
 
 setuptools.setup(
     name="incqueryserver-jupyter",

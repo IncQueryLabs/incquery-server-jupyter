@@ -1,37 +1,43 @@
+{% set name = "incqueryserver-jupyter" %}
+{% set version = "0.17.0" %}
+
+
 package:
-  name: incqueryserver-jupyter
-  version: "0.16.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  path: ../../../../source/incqueryserver-jupyter
-  
-  
-build:
-  noarch: python
-    
-  
-requirements:
-  build:
-    - python
-    - setuptools
-    - incqueryserver-api-python-client
-    - ipywidgets
-    - requests
-    - mms-python-client
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/incqueryserver-jupyter-{{ version }}.tar.gz
+  sha256: 74e120aa0adce531fd856fcf091dfb0f504ee6d859cc8f519fae2d979e84c67b
 
-  run:
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - pip
     - python
-    - incqueryserver-api-python-client
+  run:
+    - incqueryserver-api-python-client=={{ version }}
     - ipywidgets
-    - requests
     - mms-python-client
+    - python
 
 test:
   imports:
     - iqs_jupyter
+  commands:
+    - pip check
+  requires:
+    - pip
 
 about:
   home: https://github.com/IncQueryLabs/incquery-server-jupyter
   license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
   summary: IncQuery Server Client Extensions for Jupyter and Python
-  
+
+extra:
+  recipe-maintainers:
+    - IncQueryLabs
