@@ -55,11 +55,12 @@ You must install the generated Python client package by executing ONE of the fol
 
 #### Release version from public repository 
 
-Currently builds are available [from PyPI](https://pypi.org/project/incqueryserver-api-python-client/).
+Builds are available [on PyPI](https://pypi.org/project/incqueryserver-api-python-client/) and [on Conda forge](https://anaconda.org/conda-forge/incqueryserver-api-python-client).
 
-        pip install incqueryserver-api-python-client
+The Conda-forge package is maintained in the incqueryserver-api-python-client [feedstock repository](https://github.com/conda-forge/incqueryserver-api-python-client-feedstock.git)
 
-Conda package builds will be available in the future. 
+* Install from PyPI: `pip install incqueryserver-api-python-client`
+* Install from Conda forge: `conda install -c conda-forge incqueryserver-api-python-client`
 
 Note that these publicly available builds have been generated to support basic authentication. If your IQS instance uses another authentication method, you need to install the package build shipped with your IQS instance.
 
@@ -107,19 +108,25 @@ You must install the Jupyter support itself by executing ONE of the following op
 
 #### Release version from public repository 
 
-Currently builds are available [from PyPI](https://pypi.org/project/incqueryserver-jupyter/).
+Builds are available [on PyPI](https://pypi.org/project/incqueryserver-jupyter/) and [on Conda-forge](https://anaconda.org/conda-forge/incqueryserver-jupyter)
 
-        pip install incqueryserver-jupyter
+The Conda-forge package is maintained in the incqueryserver-jupyter [feedstock repository](https://github.com/conda-forge/incqueryserver-jupyter-feedstock.git)
 
-Conda package builds will be available in the future. 
+* Install from PyPI: `pip install incqueryserver-jupyter`
+* Install from Conda-forge: `conda install -c conda-forge incqueryserver-jupyter`
 
 #### Install from source using Conda 
 
 Ensure that the non-generated Jupyter-specific client extensions are available to notebooks by executing ONE of the following options: 
-   * For end users: (in the Anaconda console environment) build a conda package from the client extensions sources, then install it:
-
-            conda build -c conda-forge ${this-git-repo}/releng/iqs-jupyter-packaging/conda/incqueryserver-jupyter
+   * For end users (in the Anaconda console environment):
+       * Clone the  [feedstock repository](https://github.com/conda-forge/incqueryserver-jupyter-feedstock.git) where the package is maintained
+       * Build a conda package from the client extensions sources, then install it:
+            ```
+            git clone https://github.com/conda-forge/incqueryserver-jupyter-feedstock.git
+            conda build -c conda-forge ${feedstock-git-repo}/recipe
             conda install -c conda-forge --use-local incqueryserver-jupyter
+           ```
+       * **Plase note that this will install the release version from PyPI**
 
    * For developers: issue the following command to perform a "developer" install directly from the source project; changes to the source will be reflected immediately to newly (re)started Python interpreters / Jupyter kernels (previously started kernels that already executed the `import` will keep the old content until restarted).
 
