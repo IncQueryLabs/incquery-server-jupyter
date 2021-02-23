@@ -115,8 +115,13 @@ class OSMCClient:
     def _retrieve_single(self, element_descriptor):
         import requests
         req_url = self.element_api_link(element_descriptor)
-        osmc_response = requests.get(req_url, auth=self.auth)
+
+        session = requests.session()
+        osmc_response = session.get(req_url, auth=self.auth)
         osmc_response.raise_for_status()
+        logout_response = session.get(f'{self.access_point_prefix}logout')
+        logout_response.raise_for_status()
+
         raw_container_content, raw_element_content = osmc_response.json()
         return raw_container_content, raw_element_content
         
@@ -148,8 +153,13 @@ class OSMCClient:
         import requests
         req_url = self.element_batch_api_link(revision_descriptor)
         req_body = ','.join(element_id_set)
-        osmc_response = requests.post(req_url, data=req_body, auth=self.auth)
+
+        session = requests.session()
+        osmc_response = session.post(req_url, data=req_body, auth=self.auth)
         osmc_response.raise_for_status()
+        logout_response = session.get(f'{self.access_point_prefix}logout')
+        logout_response.raise_for_status()
+
         return osmc_response.json()
 
     def element_short_string(self, element_descriptor):
