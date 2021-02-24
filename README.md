@@ -4,10 +4,15 @@ Requires [IncQuery Server (IQS)](https://incquery.io) to operate.
 
 ## PyPI packages
 
-* **API client**: [![PyPI version](https://badge.fury.io/py/incqueryserver-api-python-client.svg)](https://badge.fury.io/py/incqueryserver-api-python-client)
-* **Jupyter extensions**: [![PyPI version](https://badge.fury.io/py/incqueryserver-jupyter.svg)](https://badge.fury.io/py/incqueryserver-jupyter)
+### API client 
+[![PyPI version](https://badge.fury.io/py/incqueryserver-api-python-client.svg)](https://badge.fury.io/py/incqueryserver-api-python-client)
+
+### Jupyter extensions
+[![PyPI version](https://badge.fury.io/py/incqueryserver-jupyter.svg)](https://badge.fury.io/py/incqueryserver-jupyter)
 
 ## Conda packages
+
+### API client
 
 <table><tr><td>All platforms:</td>
     <td>
@@ -21,6 +26,8 @@ Requires [IncQuery Server (IQS)](https://incquery.io) to operate.
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-incqueryserver--api--python--client-green.svg)](https://anaconda.org/conda-forge/incqueryserver-api-python-client) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/incqueryserver-api-python-client.svg)](https://anaconda.org/conda-forge/incqueryserver-api-python-client) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/incqueryserver-api-python-client.svg)](https://anaconda.org/conda-forge/incqueryserver-api-python-client) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/incqueryserver-api-python-client.svg)](https://anaconda.org/conda-forge/incqueryserver-api-python-client) |
+
+### Jupyter extensions
 
 <table><tr><td>All platforms:</td>
     <td>
