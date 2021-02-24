@@ -7,6 +7,35 @@ Requires [IncQuery Server (IQS)](https://incquery.io) to operate.
 * **API client**: [![PyPI version](https://badge.fury.io/py/incqueryserver-api-python-client.svg)](https://badge.fury.io/py/incqueryserver-api-python-client)
 * **Jupyter extensions**: [![PyPI version](https://badge.fury.io/py/incqueryserver-jupyter.svg)](https://badge.fury.io/py/incqueryserver-jupyter)
 
+## Conda packages
+
+<table><tr><td>All platforms:</td>
+    <td>
+      <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=11971&branchName=master">
+        <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/incqueryserver-api-python-client-feedstock?branchName=master">
+      </a>
+    </td>
+  </tr>
+</table>
+
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-incqueryserver--api--python--client-green.svg)](https://anaconda.org/conda-forge/incqueryserver-api-python-client) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/incqueryserver-api-python-client.svg)](https://anaconda.org/conda-forge/incqueryserver-api-python-client) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/incqueryserver-api-python-client.svg)](https://anaconda.org/conda-forge/incqueryserver-api-python-client) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/incqueryserver-api-python-client.svg)](https://anaconda.org/conda-forge/incqueryserver-api-python-client) |
+
+<table><tr><td>All platforms:</td>
+    <td>
+      <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=11972&branchName=master">
+        <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/incqueryserver-jupyter-feedstock?branchName=master">
+      </a>
+    </td>
+  </tr>
+</table>
+
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-incqueryserver--jupyter-green.svg)](https://anaconda.org/conda-forge/incqueryserver-jupyter) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/incqueryserver-jupyter.svg)](https://anaconda.org/conda-forge/incqueryserver-jupyter) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/incqueryserver-jupyter.svg)](https://anaconda.org/conda-forge/incqueryserver-jupyter) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/incqueryserver-jupyter.svg)](https://anaconda.org/conda-forge/incqueryserver-jupyter) |
+
+
 ## MyBinder shortcuts
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/IncQueryLabs/incquery-server-jupyter/master?filepath=example-notebook-home%2Fiqs-demo-mms.ipynb)
