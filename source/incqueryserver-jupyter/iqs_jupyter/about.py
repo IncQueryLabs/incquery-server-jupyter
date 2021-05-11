@@ -20,4 +20,4 @@ Created on 2019. máj. 24.
 
 # single-sourcing of version string
 # see solution 3 @ https://packaging.python.org/guides/single-sourcing-package-version
-__version__ = "0.19.0"
+__version__ = "0.20.0.dev2"
