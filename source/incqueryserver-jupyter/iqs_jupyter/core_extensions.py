@@ -352,7 +352,8 @@ def connect(
     auth_with_user_pw  = True    
 ):
     configuration = iqs_client.Configuration()
-    configuration.host=address 
+    configuration.host=address
+    configuration.access_token = None
     if auth_with_user_pw:
         configuration.username=user
         configuration.password=password
