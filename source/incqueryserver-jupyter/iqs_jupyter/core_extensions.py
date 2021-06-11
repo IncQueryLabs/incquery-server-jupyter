@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import requests
+
 from iqs_jupyter import api_composition
 '''
 Created on 2019-04-09
@@ -25,6 +27,7 @@ import collections
 
 import ipywidgets as widgets
 from IPython.display import display
+from ipywidgets import interact
 
 import iqs_client
 
@@ -373,6 +376,7 @@ class IQSConnectorWidget:
         user_label       = 'User:',
         password_label   = 'Password:',
         labelText="IQS API Access Point",
+        login_button=True,
         auto_display=True
     ):
         self.ask_for_user_pw = ask_for_user_pw
@@ -386,8 +390,29 @@ class IQSConnectorWidget:
         else:
             fields = [self.address_field]
         
-        self.box=widgets.HBox([widgets.Label(value=labelText), widgets.VBox(fields)])
-        if auto_display: self.display()
+        self.box = widgets.HBox([widgets.Label(value=labelText), widgets.VBox(fields)])
+        if auto_display:
+            self.display()
+
+        if login_button:
+            btn_login = interact.options(manual=True, manual_name="Login")
+
+            @btn_login
+            def login_to_iqs():
+                try:
+                    self.iqs = self.connect()
+                    server_status = requests.get(
+                        "{}/api/server.status".format(self.address_field.value),
+                        auth=(self.user_field.value, self.password_field.value)
+                    )
+                    if server_status.status_code == 200:
+                        if server_status.json()["componentStatuses"]["SERVER"] == "UP":
+                            print("Connected! IQS is ready to use.")
+                    else:
+                        raise Exception("Error during login operation.", "{}: {}".format(server_status.status_code, server_status.reason))
+
+                except Exception as error:
+                    print("Connection failed.", error)
             
     def display(self):
         display(self.box)
