@@ -27,7 +27,6 @@ import collections
 
 import ipywidgets as widgets
 from IPython.display import display
-from ipywidgets import interact
 
 import iqs_client
 
@@ -389,28 +388,34 @@ class IQSConnectorWidget:
             fields = [self.address_field, self.user_field, self.password_field]
         else:
             fields = [self.address_field]
-        
+
+        btn_login = widgets.Button(
+            description="Login",
+            disabled=False
+        )
+
+        def login_to_iqs(_):
+            try:
+                self.iqs = self.connect()
+                server_status = self.iqs.server_management.get_server_status_with_http_info()
+
+                if server_status[1] == 200:
+                    if server_status[0].component_statuses["SERVER"] == "UP":
+                        print("Connected! IQS is ready to use.")
+                else:
+                    raise Exception("Error during login operation.", "{}: {}".format(server_status.status_code, server_status.reason))
+
+            except Exception as error:
+                print("Connection failed.", error)
+
+        btn_login.on_click(login_to_iqs)
+
+        if login_button:
+            fields.append(btn_login)
+
         self.box = widgets.HBox([widgets.Label(value=labelText), widgets.VBox(fields)])
         if auto_display:
             self.display()
-
-        if login_button:
-            btn_login = interact.options(manual=True, manual_name="Login")
-
-            @btn_login
-            def login_to_iqs():
-                try:
-                    self.iqs = self.connect()
-                    server_status = self.iqs.server_management.get_server_status_with_http_info()
-
-                    if server_status[1] == 200:
-                        if server_status[0].component_statuses["SERVER"] == "UP":
-                            print("Connected! IQS is ready to use.")
-                    else:
-                        raise Exception("Error during login operation.", "{}: {}".format(server_status.status_code, server_status.reason))
-
-                except Exception as error:
-                    print("Connection failed.", error)
             
     def display(self):
         display(self.box)
