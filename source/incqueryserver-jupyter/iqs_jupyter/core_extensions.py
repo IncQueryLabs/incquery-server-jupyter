@@ -401,12 +401,10 @@ class IQSConnectorWidget:
             def login_to_iqs():
                 try:
                     self.iqs = self.connect()
-                    server_status = requests.get(
-                        "{}/api/server.status".format(self.address_field.value),
-                        auth=(self.user_field.value, self.password_field.value)
-                    )
-                    if server_status.status_code == 200:
-                        if server_status.json()["componentStatuses"]["SERVER"] == "UP":
+                    server_status = self.iqs.server_management.get_server_status_with_http_info()
+
+                    if server_status[1] == 200:
+                        if server_status[0].component_statuses["SERVER"] == "UP":
                             print("Connected! IQS is ready to use.")
                     else:
                         raise Exception("Error during login operation.", "{}: {}".format(server_status.status_code, server_status.reason))
