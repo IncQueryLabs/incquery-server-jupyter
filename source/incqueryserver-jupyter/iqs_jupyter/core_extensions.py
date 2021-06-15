@@ -389,30 +389,29 @@ class IQSConnectorWidget:
         else:
             fields = [self.address_field]
 
-        btn_login = widgets.Button(
-            description="Login",
+        btn_connect = widgets.Button(
+            description="Test Connection",
             disabled=False
         )
         connection_label = widgets.Label("")
 
-        def login_to_iqs(_):
+        def test_connection(_):
             try:
-                self.iqs = self.connect()
-                server_status = self.iqs.server_management.get_server_status_with_http_info()
+                server_status = self.connect().server_management.get_server_status_with_http_info()
 
                 if server_status[1] == 200:
                     if server_status[0].component_statuses["SERVER"] == "UP":
                         connection_label.value = "Connected! IQS is ready to use."
                 else:
-                    raise Exception("Error during login operation.", "{}: {}".format(server_status.status_code, server_status.reason))
+                    raise Exception("Error during operation.", "{}: {}".format(server_status.status_code, server_status.reason))
 
             except Exception as error:
                 connection_label.value = "Connection failed: {} ({})".format(error.reason, error.status)
 
-        btn_login.on_click(login_to_iqs)
+        btn_connect.on_click(test_connection)
 
         if login_button:
-            fields.append(btn_login)
+            fields.append(btn_connect)
             fields.append(connection_label)
 
         self.box = widgets.HBox([widgets.Label(value=labelText), widgets.VBox(fields)])
