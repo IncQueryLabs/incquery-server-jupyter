@@ -393,6 +393,7 @@ class IQSConnectorWidget:
             description="Login",
             disabled=False
         )
+        connection_label = widgets.Label("")
 
         def login_to_iqs(_):
             try:
@@ -401,17 +402,18 @@ class IQSConnectorWidget:
 
                 if server_status[1] == 200:
                     if server_status[0].component_statuses["SERVER"] == "UP":
-                        print("Connected! IQS is ready to use.")
+                        connection_label.value = "Connected! IQS is ready to use."
                 else:
                     raise Exception("Error during login operation.", "{}: {}".format(server_status.status_code, server_status.reason))
 
             except Exception as error:
-                print("Connection failed.", error)
+                connection_label.value = "Connection failed: {} ({})".format(error.reason, error.status)
 
         btn_login.on_click(login_to_iqs)
 
         if login_button:
             fields.append(btn_login)
+            fields.append(connection_label)
 
         self.box = widgets.HBox([widgets.Label(value=labelText), widgets.VBox(fields)])
         if auto_display:
