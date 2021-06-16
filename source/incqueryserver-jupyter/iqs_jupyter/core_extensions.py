@@ -374,15 +374,17 @@ class IQSConnectorWidget:
         address_label    = 'Address:',
         user_label       = 'User:',
         password_label   = 'Password:',
-        labelText="IQS API Access Point",
-        login_button=True,
-        auto_display=True
+        label_text       = "IQS API Access Point",
+        login_button     = True,
+        auto_display     = True
     ):
         self.ask_for_user_pw = ask_for_user_pw
         
         self.address_field  = widgets.Text    (value=initial_address,  description=address_label)
         self.user_field     = widgets.Text    (value=initial_user,     description=user_label)
         self.password_field = widgets.Password(value=initial_password, description=password_label)
+
+        self.iqs_client = self.connect()
         
         if ask_for_user_pw:
             fields = [self.address_field, self.user_field, self.password_field]
@@ -397,7 +399,8 @@ class IQSConnectorWidget:
 
         def test_connection(_):
             try:
-                server_status = self.connect().server_management.get_server_status_with_http_info()
+                self.iqs_client = self.connect()
+                server_status = self.iqs_client.server_management.get_server_status_with_http_info()
 
                 if server_status[1] == 200:
                     if server_status[0].component_statuses["SERVER"] == "UP":
@@ -414,10 +417,10 @@ class IQSConnectorWidget:
             fields.append(btn_connect)
             fields.append(connection_label)
 
-        self.box = widgets.HBox([widgets.Label(value=labelText), widgets.VBox(fields)])
+        self.box = widgets.HBox([widgets.Label(value=label_text), widgets.VBox(fields)])
         if auto_display:
             self.display()
-            
+
     def display(self):
         display(self.box)
         
@@ -441,10 +444,6 @@ class IQSConnectorWidget:
         )
 
 
-
-
-
-
 class IQSClient:
     def __init__(
         self,
@@ -452,6 +451,9 @@ class IQSClient:
     ):
         api_composition.decorate_iqs_client(self, root_configuration)
         self.jupyter_tools = ext_point.IQSJupyterTools(self)
+
+    def __get__(self, instance, owner):
+        return owner.connect()
 
 
 
