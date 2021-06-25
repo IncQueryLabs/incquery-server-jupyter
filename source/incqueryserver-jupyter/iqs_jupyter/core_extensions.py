@@ -452,9 +452,6 @@ class IQSClient:
         api_composition.decorate_iqs_client(self, root_configuration)
         self.jupyter_tools = ext_point.IQSJupyterTools(self)
 
-    def __get__(self, instance, owner):
-        return owner.connect()
-
 
 
 # custom validation result datatype 
