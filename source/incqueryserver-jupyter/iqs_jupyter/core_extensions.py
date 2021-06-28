@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import requests
+
 from iqs_jupyter import api_composition
 '''
 Created on 2019-04-09
@@ -372,23 +374,53 @@ class IQSConnectorWidget:
         address_label    = 'Address:',
         user_label       = 'User:',
         password_label   = 'Password:',
-        labelText="IQS API Access Point",
-        auto_display=True
+        label_text       = "IQS API Access Point",
+        login_button     = True,
+        auto_display     = True
     ):
         self.ask_for_user_pw = ask_for_user_pw
         
         self.address_field  = widgets.Text    (value=initial_address,  description=address_label)
         self.user_field     = widgets.Text    (value=initial_user,     description=user_label)
         self.password_field = widgets.Password(value=initial_password, description=password_label)
+
+        self.iqs_client = self.connect()
         
         if ask_for_user_pw:
             fields = [self.address_field, self.user_field, self.password_field]
         else:
             fields = [self.address_field]
-        
-        self.box=widgets.HBox([widgets.Label(value=labelText), widgets.VBox(fields)])
-        if auto_display: self.display()
-            
+
+        btn_connect = widgets.Button(
+            description="Test Connection",
+            disabled=False
+        )
+        connection_label = widgets.Label("")
+
+        def test_connection(_):
+            try:
+                self.iqs_client = self.connect()
+                server_status = self.iqs_client.server_management.get_server_status_with_http_info()
+
+                if server_status[1] == 200:
+                    if server_status[0].component_statuses["SERVER"] == "UP":
+                        connection_label.value = "Connected! IQS is ready to use."
+                else:
+                    raise Exception("Error during operation.", "{}: {}".format(server_status.status_code, server_status.reason))
+
+            except Exception as error:
+                connection_label.value = "Connection failed: {} ({})".format(error.reason, error.status)
+
+        btn_connect.on_click(test_connection)
+
+        if login_button:
+            fields.append(btn_connect)
+            fields.append(connection_label)
+
+        self.box = widgets.HBox([widgets.Label(value=label_text), widgets.VBox(fields)])
+        if auto_display:
+            self.display()
+
     def display(self):
         display(self.box)
         
@@ -410,10 +442,6 @@ class IQSConnectorWidget:
             password          = self.password_field.value,
             auth_with_user_pw = self.ask_for_user_pw
         )
-
-
-
-
 
 
 class IQSClient:
