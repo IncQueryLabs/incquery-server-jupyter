@@ -11,33 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import requests
 
-from iqs_jupyter import api_composition
 '''
 Created on 2019-04-09
 
 @author: Gábor Bergmann
 '''
 
-from typing import Optional
-import html
 import collections
-
-
-import ipywidgets as widgets
-from IPython.display import display
+import html
+from typing import Optional
 
 import iqs_client
+
+import iqs_jupyter.tool_extension_point as ext_point
+from iqs_jupyter.helpers import cell_to_html as _cell_to_html
+from iqs_jupyter.helpers import dict_to_element as _dict_to_element
 
 
 ## TODO separate TWC-specific, MMS-specific and core parts into separate files if possible (re-export of core?)
 ## TODO refactor: pull up TWC-independent parts of (a) revision selector widget (retrofit mms commit selector) and (b) OSMC element info widget
-
-import iqs_jupyter.config_defaults as defaults
-import iqs_jupyter.tool_extension_point as ext_point
-from iqs_jupyter.helpers import cell_to_html as _cell_to_html
-from iqs_jupyter.helpers import dict_to_element as _dict_to_element
 
 # recognizing element-in-compartment descriptors in match results
 
@@ -347,115 +340,8 @@ def binding(**kwargs):
         for param_name, param_value in kwargs.items()
     ]
 
-def connect(
-    address  = defaults.default_IQS_address,
-    user     = defaults.default_IQS_username,
-    password = defaults.default_IQS_password,
-    auth_with_user_pw  = True    
-):
-    configuration = iqs_client.Configuration()
-    configuration.host=address
-    configuration.access_token = None
-    if auth_with_user_pw:
-        configuration.username=user
-        configuration.password=password
-    return IQSClient(configuration)
 
-
-## useful widgets and clients
-
-class IQSConnectorWidget:
-    def __init__(
-        self,
-        ask_for_user_pw  = True,
-        initial_address  = defaults.default_IQS_address,
-        initial_user     = defaults.default_IQS_username,
-        initial_password = defaults.default_IQS_password,
-        address_label    = 'Address:',
-        user_label       = 'User:',
-        password_label   = 'Password:',
-        label_text       = "IQS API Access Point",
-        login_button     = True,
-        auto_display     = True
-    ):
-        self.ask_for_user_pw = ask_for_user_pw
-        
-        self.address_field  = widgets.Text    (value=initial_address,  description=address_label)
-        self.user_field     = widgets.Text    (value=initial_user,     description=user_label)
-        self.password_field = widgets.Password(value=initial_password, description=password_label)
-
-        self.iqs_client = self.connect()
-        
-        if ask_for_user_pw:
-            fields = [self.address_field, self.user_field, self.password_field]
-        else:
-            fields = [self.address_field]
-
-        btn_connect = widgets.Button(
-            description="Test Connection",
-            disabled=False
-        )
-        connection_label = widgets.Label("")
-
-        def test_connection(_):
-            try:
-                self.iqs_client = self.connect()
-                server_status = self.iqs_client.server_management.get_server_status_with_http_info()
-
-                if server_status[1] == 200:
-                    if server_status[0].component_statuses["SERVER"] == "UP":
-                        connection_label.value = "Connected! IQS is ready to use."
-                else:
-                    raise Exception("Error during operation.", "{}: {}".format(server_status.status_code, server_status.reason))
-
-            except Exception as error:
-                connection_label.value = "Connection failed: {} ({})".format(error.reason, error.status)
-
-        btn_connect.on_click(test_connection)
-
-        if login_button:
-            fields.append(btn_connect)
-            fields.append(connection_label)
-
-        self.box = widgets.HBox([widgets.Label(value=label_text), widgets.VBox(fields)])
-        if auto_display:
-            self.display()
-
-    def display(self):
-        display(self.box)
-        
-    def _repr_html_(self):
-        self.display()
-        
-    def api_client_configuration(self):
-        configuration = iqs_client.Configuration()
-        configuration.host=self.address_field.value 
-        if self.ask_for_user_pw:
-            configuration.username=self.user_field.value
-            configuration.password=self.password_field.value
-        return configuration
-    
-    def connect(self):
-        return connect(
-            address           = self.address_field.value,
-            user              = self.user_field.value,
-            password          = self.password_field.value,
-            auth_with_user_pw = self.ask_for_user_pw
-        )
-
-
-class IQSClient:
-    def __init__(
-        self,
-        root_configuration
-    ):
-        api_composition.decorate_iqs_client(self, root_configuration)
-        self.jupyter_tools = ext_point.IQSJupyterTools(self)
-
-
-
-# custom validation result datatype 
-
+# custom validation result datatype
 ValidationDiagnosticItem = collections.namedtuple(
     "ValidationDiagnosticItem", 
     ['constraint_element_type', 'constraint_element_name', 'constraint_element_relative_id', 'constraint_element',

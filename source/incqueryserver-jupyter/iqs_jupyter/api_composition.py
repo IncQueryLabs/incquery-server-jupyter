@@ -23,8 +23,8 @@ import importlib
 from copy import copy
 
 ApiClientModule = collections.namedtuple(
-    "ApiClientModule", 
-    ['endpoint_path', 
+    "ApiClientModule",
+    ['endpoint_path',
      'root_module_name',
      'api_names_to_class']
 )
@@ -42,7 +42,7 @@ _api_client_modules = [
         'query_execution'   : "QueryExecutionApi",
         'repository'        : "RepositoryApi",
         'server_management' : "ServerManagementApi",
-        'validation'        : "ValidationApi",    
+        'validation'        : "ValidationApi",
         'integration'       : "IntegrationApi",
         'mms_repository'    : "MmsRepositoryApi",
         'experimental'      : "ExperimentalApi",
@@ -50,21 +50,19 @@ _api_client_modules = [
     }),
 ]
 
-def decorate_iqs_client(iqs_client_object, root_configuration):
+
+def decorate_iqs_client(iqs_client_object, root_configuration, endpoint_class):
     for api_client_module in _api_client_modules:
-        try: # if client lib is missing, simply skip
-            endpoint_root_module=importlib.import_module(api_client_module.root_module_name)
-            endpoint_client_class = getattr(endpoint_root_module, "ApiClient")
-            
+        try:  # if client lib is missing, simply skip
             endpoint_specific_config = copy(root_configuration)
-            endpoint_specific_config.host="{}/{}".format(root_configuration.host, api_client_module.endpoint_path)
-            endpoint_specific_client = endpoint_client_class(endpoint_specific_config)
+            endpoint_specific_config.host = "{}/{}".format(root_configuration.host, api_client_module.endpoint_path)
+            endpoint_specific_client = endpoint_class(endpoint_specific_config)
 
             for api_field_name, api_class_name in api_client_module.api_names_to_class.items():
-                api_module_name= "{}.api.{}_api".format(api_client_module.root_module_name, api_field_name)
+                api_module_name = "{}.api.{}_api".format(api_client_module.root_module_name, api_field_name)
                 try:
-                    api_module=importlib.import_module(api_module_name)
-                    if api_class_name in dir(api_module): # there might be api classes presently missing / disabled
+                    api_module = importlib.import_module(api_module_name)
+                    if api_class_name in dir(api_module):  # there might be api classes presently missing / disabled
                         api_class = getattr(api_module, api_class_name)
                         api_object = api_class(endpoint_specific_client)
                         setattr(iqs_client_object, api_field_name, api_object)
