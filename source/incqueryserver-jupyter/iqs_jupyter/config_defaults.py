@@ -20,9 +20,9 @@ Created on 2019. máj. 21.
 
 _prefix = "IQS_JUPYTER_"
 
-auto_display_by_default: bool = True
-use_oidc_by_default: bool = False
-use_password_by_default: bool = True
+default_auto_display: bool = True
+default_use_oidc: bool = False
+default_use_password: bool = True
 
 default_IQS_address  : str = None
 default_IQS_username : str = None
