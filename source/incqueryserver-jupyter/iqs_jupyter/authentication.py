@@ -28,7 +28,7 @@ def connect(
         user=defaults.default_IQS_username,
         password=defaults.default_IQS_password,
         token=defaults.default_IQS_token,
-        auth_with_user_pw=defaults.use_password_by_default,
+        auth_with_user_pw=defaults.default_use_password,
         use_oidc=defaults.default_use_oidc
 ):
     configuration = iqs_client.Configuration()
@@ -58,7 +58,7 @@ class IQSClient:
 class IQSConnectorWidget:
     def __init__(
             self,
-            ask_for_user_pw=defaults.use_password_by_default,
+            ask_for_user_pw=defaults.default_use_password,
             initial_address=defaults.default_IQS_address,
             initial_user=defaults.default_IQS_username,
             initial_password=defaults.default_IQS_password,
@@ -119,7 +119,7 @@ class IQSConnectorWidget:
             self.display()
 
     def display(self):
-        display(self.box)
+        display(tuple([self.box]))
 
     def _repr_html_(self):
         self.display()
