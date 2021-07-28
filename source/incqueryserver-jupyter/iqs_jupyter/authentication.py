@@ -20,7 +20,7 @@ from iqs_client import ApiClient
 import iqs_jupyter.config_defaults as defaults
 import iqs_jupyter.tool_extension_point as ext_point
 from iqs_jupyter import api_composition
-from iqs_jupyter.oicd_client import OicdClient
+from iqs_client_extension import ApiClientWithOIDC
 
 
 def connect(
@@ -49,7 +49,7 @@ class IQSClient:
             use_oicd
     ):
         if use_oicd:
-            api_composition.decorate_iqs_client(self, root_configuration, OicdClient)
+            api_composition.decorate_iqs_client(self, root_configuration, ApiClientWithOIDC)
         else:
             api_composition.decorate_iqs_client(self, root_configuration, ApiClient)
         self.jupyter_tools = ext_point.IQSJupyterTools(self)
