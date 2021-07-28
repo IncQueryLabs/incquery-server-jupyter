@@ -29,7 +29,7 @@ def connect(
         password=defaults.default_IQS_password,
         token=defaults.default_IQS_token,
         auth_with_user_pw=defaults.use_password_by_default,
-        use_oidc=defaults.use_oidc_by_default
+        use_oidc=defaults.default_use_oidc
 ):
     configuration = iqs_client.Configuration()
     configuration.host = address
@@ -62,7 +62,7 @@ class IQSConnectorWidget:
             initial_address=defaults.default_IQS_address,
             initial_user=defaults.default_IQS_username,
             initial_password=defaults.default_IQS_password,
-            use_oidc=defaults.use_oidc_by_default,
+            use_oidc=defaults.default_use_oidc,
             token=defaults.default_IQS_token,
             address_label='Address:',
             user_label='User:',
@@ -70,7 +70,7 @@ class IQSConnectorWidget:
             password_label='Password:',
             label_text="IQS API Access Point",
             login_button=True,
-            auto_display=defaults.auto_display_by_default
+            auto_display=defaults.default_auto_display
     ):
         self.ask_for_user_pw = ask_for_user_pw
         self.token = token
