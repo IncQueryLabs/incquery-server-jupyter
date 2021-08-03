@@ -119,7 +119,7 @@ class IQSConnectorWidget:
             self.display()
 
     def display(self):
-        display(tuple([self.box]))
+        display(self.box)
 
     def _repr_html_(self):
         self.display()
