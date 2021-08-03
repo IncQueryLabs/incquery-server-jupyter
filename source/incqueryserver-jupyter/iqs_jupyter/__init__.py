@@ -28,6 +28,7 @@ from iqs_jupyter.about import __version__
 
 # end-user modules
 from iqs_jupyter.core_extensions import *
+from iqs_jupyter.authentication import *
 
 if 'MmsRepositoryApi' in dir(iqs_client):
     from iqs_jupyter.mms_extensions import *
