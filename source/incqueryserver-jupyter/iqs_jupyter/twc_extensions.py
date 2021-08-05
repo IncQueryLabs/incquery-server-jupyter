@@ -290,7 +290,7 @@ def _monkey_patch_list_dependencies_response_repr_html(self):
     '''.format("".join(['''
             <li>Dependee MDObject ID: {}<ul style="list-style: none;">{}</ul>
             </li>'''.format(html.escape(dependeeId), "".join(['''
-                <li>{}<ul style="list-style: none;">{}</ul>
+                <li>Workspace: {}<ul style="list-style: none;">{}</ul>
                 </li>'''.format(html.escape(workspace.title), "".join(['''
                     <li>Resource: {}<ul style="list-style: none;">{}</ul>
                     </li>'''.format(html.escape(resource.title), "".join(['''
