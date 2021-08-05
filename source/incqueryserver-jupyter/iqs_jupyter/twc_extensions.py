@@ -280,6 +280,51 @@ def _monkey_patch_element_descriptor_repr_html(self):
     else:
         return '<span title="{}">element #{}</span>'.format(html.escape(self.to_str()), html.escape(self.element_id))
 
+def _monkey_patch_list_dependencies_response_repr_html(self):
+    import html
+    return '''
+    <div>
+        <ul style="list-style: none; padding-left: 0">{}
+        </ul>
+    </div>
+    '''.format("".join(['''
+            <li>Dependee MDObject ID: {}<ul style="list-style: none;">{}</ul>
+            </li>'''.format(html.escape(dependeeId), "".join(['''
+                <li>Workspace: {}<ul style="list-style: none;">{}</ul>
+                </li>'''.format(html.escape(workspace.title), "".join(['''
+                    <li>Resource: {}<ul style="list-style: none;">{}</ul>
+                    </li>'''.format(html.escape(resource.title), "".join(['''
+                        <li>Branch: {}<ul style="list-style: none;">{}</ul>
+                        </li>'''.format(html.escape(branch.title), "".join(['''
+                            <li>#{}
+                                <table border="1" width="100%">
+                                    <thead>
+                                        <tr style="text-align: right;">
+                                            <th>Name</th>
+                                            <th>ElementId</th>
+                                            <th>Reference</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {}
+                                    </tbody>
+                                </table>
+                            </li>'''.format(html.escape(str(revision["revisionNumber"])), "\n".join([
+                                "<tr><td><a href='{}'>{}</a></td><td>{}</td><td>{}</td></tr>".format(
+                                    html.escape(reference["elements"][0]["osmcLink"]),
+                                    html.escape(reference["elements"][0]["name"]),
+                                    html.escape(reference["elements"][0]["elementId"]),
+                                    html.escape(reference["reference"])
+                                ) for reference in revision["references"]
+                            ])) for revision in branch.revisions
+                        ])) for branch in resource.branches
+                    ])) for resource in workspace.resources
+                ])) for workspace in dependee.workspaces
+            ]) if 0<dependee.result_size else "<li><i>No dependencies found.</i></li>"
+            ) for dependeeId, dependee in self.results.items()
+        ])
+    )
+
 def _monkey_patch_element_descriptor_resolve_reference(self, target_element_id):
     return iqs_client.ElementDescriptor(
         revision_number = self.revision_number,
@@ -327,6 +372,7 @@ def _do_monkey_patching():
     iqs_client.RevisionDescriptor.get_element_descriptor_by_id = _monkey_patch_revision_descriptor_get_element_descriptor_by_id
     iqs_client.RevisionDescriptor.to_compartment_uri = _monkey_patch_revision_descriptor_to_compartment_uri
     iqs_client.RevisionDescriptor.to_model_compartment = _monkey_patch_revision_descriptor_to_model_compartment
+    iqs_client.ListDependenciesResponse._repr_html_ = _monkey_patch_list_dependencies_response_repr_html
     
     ext_point.IQSJupyterTools.twc_revision_selector_widget = _monkey_patch_jupytertools_twc_revision_selector_widget
 
