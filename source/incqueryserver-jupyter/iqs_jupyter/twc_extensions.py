@@ -292,7 +292,7 @@ def _monkey_patch_list_dependencies_response_repr_html(self):
             </li>'''.format(html.escape(dependeeId), "".join(['''
                 <li>{}<ul style="list-style: none;">{}</ul>
                 </li>'''.format(html.escape(workspace.title), "".join(['''
-                    <li>{}<ul style="list-style: none;">{}</ul>
+                    <li>Resource: {}<ul style="list-style: none;">{}</ul>
                     </li>'''.format(html.escape(resource.title), "".join(['''
                         <li>{}<ul style="list-style: none;">{}</ul>
                         </li>'''.format(html.escape(branch.title), "".join(['''
