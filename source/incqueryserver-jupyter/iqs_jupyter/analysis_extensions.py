@@ -18,11 +18,19 @@ Created on 2019. nov. 26.
 '''
 
 import html
+import json
+from typing import Union
 
 import iqs_client
+import iqs_jupyter.config_defaults as defaults
+import iqs_jupyter.tool_extension_point as ext_point
+from IPython.core.display import display
+from ipywidgets import widgets
+from iqs_client import AnalysisConfigurationIdentifier, AnalysisApi
+from iqs_jupyter import IQSClient
+from iqs_jupyter.core_extensions import validation_color_scale
 from iqs_jupyter.helpers import cell_to_html as _cell_to_html
 from iqs_jupyter.helpers import dict_to_element as _dict_to_element
-from iqs_jupyter.core_extensions import validation_color_scale
 
 
 def _monkey_patch_analysis_results_repr_html(self: iqs_client.AnalysisResults):
@@ -212,7 +220,7 @@ def _get_analysis_configuration_selector_widget(
     return ConfigSelector(self._iqs, initial_config, auto_display)
 
 
-def _update_configuration(self: AnalysisApi, path: str):
+def _register_or_update_configuration(self: AnalysisApi, path: str):
     with open(path, "r") as file:
         conf = json.load(file)
     on_server = self.list_model_analysis_configurations().model_analysis_configuration_identifiers
@@ -226,7 +234,7 @@ def _do_monkey_patching():
     iqs_client.AnalysisResults._repr_html_ = _monkey_patch_analysis_results_repr_html
     iqs_client.AnalysisResult._repr_html_ = _monkey_patch_analysis_result_repr_html
     ext_point.IQSJupyterTools.analysis_configuration_selector_widget = _get_analysis_configuration_selector_widget
-    AnalysisApi.update_model_analysis_configuration = _update_configuration
+    AnalysisApi.register_or_update_model_analysis_configuration = _register_or_update_configuration
 
 
 _do_monkey_patching()
