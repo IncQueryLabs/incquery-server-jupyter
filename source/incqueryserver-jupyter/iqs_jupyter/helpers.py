@@ -31,16 +31,30 @@ def cell_to_html(cell):
     else:
         return str(cell)
 
-def dict_to_element(dict_or_attribute_value, url_provider=None):
+def dict_to_element(dict_or_attribute_value):
     if isinstance(dict_or_attribute_value, dict):
         for recognizer in ext_point.element_dict_recognizers:
             recognized = recognizer(dict_or_attribute_value)
             if recognized:
-                if url_provider is not None:
-                    recognized.url = url_provider(recognized)
+                for url_provider in ext_point.url_providers:
+                    if url_provider(dict_or_attribute_value['element']) is not None: # maybe we should set url param to None - else
+                        setattr(recognized, 'url', url_provider(dict_or_attribute_value['element']))
                 return recognized
-        # not recognized as an element, treated as raw dict    
+        # not recognized as an element, treated as raw dict
         return dict_or_attribute_value
     else:
         return dict_or_attribute_value
+
+# def dict_to_element(dict_or_attribute_value, url_provider=None):
+#     if isinstance(dict_or_attribute_value, dict):
+#         for recognizer in ext_point.element_dict_recognizers:
+#             recognized = recognizer(dict_or_attribute_value)
+#             if recognized:
+#                 if url_provider is not None:
+#                     recognized.url = url_provider(recognized)
+#                 return recognized
+#         # not recognized as an element, treated as raw dict
+#         return dict_or_attribute_value
+#     else:
+#         return dict_or_attribute_value
 

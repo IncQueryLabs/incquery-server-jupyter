@@ -145,7 +145,9 @@ def _monkey_patch_analysis_result_repr_html(self : iqs_client.AnalysisResult, he
     param_headers = " ".join(["<th>{}</th> ".format(html.escape(param)) for param in pattern_params])
     match_rows = "\n".join([
         "<tr><th>{}</th><td>{}</td>{}</tr>\n".format(row_index, self.matches[row_index].message, " ".join([
-            " <td>{} <a href=\"{}\">LINK</a></td>".format(_cell_to_html(_dict_to_element(argument_value.value)), _create_model_viewer_link(argument_value.value['element']))  # copartmentURI és relativeElementID
+            " <td><a href=\"{}\">{}</a></td>".format(
+                _dict_to_element(argument_value.value).url,
+                _cell_to_html(_dict_to_element(argument_value.value)))
             for argument_value in self.matches[row_index].matching_elements
         ])) for row_index in range(len(self.matches))
     ])
@@ -169,19 +171,6 @@ def _monkey_patch_analysis_result_repr_html(self : iqs_client.AnalysisResult, he
         </table>
         </div>
     '''.format(header_report, style, param_headers, match_rows)
-
-from iqs_jupyter.authentication import IQSConnectorWidget
-import requests
-
-def _create_model_viewer_link(element):
-    # iqs_host = self.configuration
-    # req = requests.get(iqs_host+"/api/web-console-config")
-    # start = req.json()["modelViewerBaseURL"]
-    start = "127.0.0.1:8080/"
-    compURI = element['compartmentURI']
-    relElementID = element['relativeElementID']
-
-    return start + '?compartmentURI='+compURI+'&elementId='+relElementID
 
 def _do_monkey_patching():
     iqs_client.AnalysisResults._repr_html_ = _monkey_patch_analysis_results_repr_html

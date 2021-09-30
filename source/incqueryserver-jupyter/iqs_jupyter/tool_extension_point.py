@@ -29,8 +29,11 @@ class IQSJupyterTools:
         self._iqs = iqs
 
 
-# connector-specific extensions may add custom ways to convert a dict to an element representation; 
+# connector-specific extensions may add custom ways to convert a dict to an element representation;
 #     parse a dict and return the constructed element or None if not the right format
-#     default is ElementInCompartmentDescriptor 
+#     default is ElementInCompartmentDescriptor
 element_dict_recognizers : List[Callable[[dict], Optional[Any]]] = []
+
+
+url_providers: List[Callable[[Any], Optional[Any]]] = []
 

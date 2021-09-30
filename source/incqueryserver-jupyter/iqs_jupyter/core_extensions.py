@@ -70,8 +70,6 @@ def _recognize_typed_element_in_compartment_descriptor(
 ext_point.element_dict_recognizers.append(_recognize_typed_element_in_compartment_descriptor)
 
 
-
-
 ## monkey patch section
 
 def _monkey_patch_element_in_compartment_descriptor_repr_html(self):
@@ -250,7 +248,7 @@ def _monkey_patch_query_execution_response_to_html(self):
     param_headers = " ".join(["<th>{}</th> ".format(html.escape(param)) for param in pattern_params])
     match_rows = "\n".join([
         "<tr><th>{}</th>{}</tr>\n".format(row_index," ".join([
-            " <td>{}</td>".format(_cell_to_html(match_list[row_index][param])) for param in pattern_params
+            " <td><a href=\"{}\">{}</a></td>".format(_cell_to_html(match_list[row_index][param]).url, _cell_to_html(match_list[row_index][param])) for param in pattern_params
         ])) for row_index in range(len(match_list))
     ])
     
