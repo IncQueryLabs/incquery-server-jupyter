@@ -58,6 +58,11 @@ def decorate_iqs_client(iqs_client_object, root_configuration, endpoint_class):
             endpoint_specific_config.host = "{}/{}".format(root_configuration.host, api_client_module.endpoint_path)
             endpoint_specific_client = endpoint_class(endpoint_specific_config)
 
+            # If session header is set in configuration, we set a default header in ApiClient
+            if hasattr(root_configuration, 'auth_header_name') and hasattr(root_configuration, 'auth_header_value'):
+                endpoint_specific_client.set_default_header(root_configuration.auth_header_name, root_configuration.auth_header_value)
+
+
             for api_field_name, api_class_name in api_client_module.api_names_to_class.items():
                 api_module_name = "{}.api.{}_api".format(api_client_module.root_module_name, api_field_name)
                 try:
