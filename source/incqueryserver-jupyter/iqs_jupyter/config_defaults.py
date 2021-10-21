@@ -23,11 +23,14 @@ _prefix = "IQS_JUPYTER_"
 default_auto_display: bool = True
 default_use_oidc: bool = False
 default_use_password: bool = True
+default_use_auth_header: bool = False
 
 default_IQS_address  : str = None
 default_IQS_username : str = None
 default_IQS_password : str = None
 default_IQS_token: str = None
+default_IQS_auth_header_name: str = None
+default_IQS_auth_header_value: str = None
 
 default_twc_workspace : str = None
 default_twc_resource  : str = None

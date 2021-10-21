@@ -28,17 +28,34 @@ def connect(
         user=defaults.default_IQS_username,
         password=defaults.default_IQS_password,
         token=defaults.default_IQS_token,
+        auth_header_name=defaults.default_IQS_auth_header_name,
+        auth_header_value=defaults.default_IQS_auth_header_value,
         auth_with_user_pw=defaults.default_use_password,
-        use_oidc=defaults.default_use_oidc
+        use_oidc=defaults.default_use_oidc,
+        use_auth_header=defaults.default_use_auth_header
 ):
     configuration = iqs_client.Configuration()
     configuration.host = address
     configuration.access_token = None
-    if auth_with_user_pw:
+
+    # Cases: Auth with password, auth with token, Session header/value
+    # First priority: Session header
+
+    if use_auth_header:
+        # Disabling username, password and token, so ApiClient does not try to authenticate
+        configuration.username = None
+        configuration.password = None
+        configuration.access_token = None
+
+        setattr(configuration, 'auth_header_name', auth_header_name)
+        setattr(configuration, 'auth_header_value', auth_header_value)
+
+    elif auth_with_user_pw:
         configuration.username = user
         configuration.password = password
     else:
         configuration.access_token = token
+
     return IQSClient(configuration, use_oidc)
 
 
@@ -64,26 +81,42 @@ class IQSConnectorWidget:
             initial_password=defaults.default_IQS_password,
             use_oidc=defaults.default_use_oidc,
             token=defaults.default_IQS_token,
+            initial_auth_header_name=defaults.default_IQS_auth_header_name,
+            initial_auth_header_value=defaults.default_IQS_auth_header_value,
+            use_auth_header=defaults.default_use_auth_header,
             address_label='Address:',
+            use_user_pw_label='Login with Username & Password',
             user_label='User:',
-            oicd_checkbox_label='Use OpenID Connect',
             password_label='Password:',
+            oidc_checkbox_label='Use OpenID Connect',
+            token_label='OIDC Token:',
             label_text="IQS API Access Point",
+            auth_header_checkbox_label='Use Authentication Header',
+            auth_header_name_label='Header Name:',
+            auth_header_value_label='Header Value:',
             login_button=True,
             auto_display=defaults.default_auto_display
     ):
-        self.ask_for_user_pw = ask_for_user_pw
-        self.token = token
 
+        self.ask_for_user_pw_checkbox = widgets.Checkbox(value=ask_for_user_pw, description=use_user_pw_label)
         self.address_field = widgets.Text(value=initial_address, description=address_label)
         self.user_field = widgets.Text(value=initial_user, description=user_label)
         self.password_field = widgets.Password(value=initial_password, description=password_label)
-        self.oicd_checkbox = widgets.Checkbox(value=use_oidc, description=oicd_checkbox_label)
+
+        self.oidc_checkbox = widgets.Checkbox(value=use_oidc, description=oidc_checkbox_label)
+        self.token_field = widgets.Text(value=token, description=token_label)
+
+        self.auth_header_checkbox = widgets.Checkbox(value=use_auth_header, description=auth_header_checkbox_label)
+        self.auth_header_name_field = widgets.Text(value=initial_auth_header_name, description=auth_header_name_label)
+        self.auth_header_value_field = widgets.Text(value=initial_auth_header_value, description=auth_header_value_label)
 
         self.iqs_client = None
 
         if ask_for_user_pw:
-            fields = [self.address_field, self.user_field, self.password_field, self.oicd_checkbox]
+            fields = [self.address_field,
+                      self.ask_for_user_pw_checkbox, self.user_field, self.password_field,
+                      self.oidc_checkbox, self.token_field,
+                      self.auth_header_checkbox, self.auth_header_name_field, self.auth_header_value_field]
         else:
             fields = [self.address_field]
 
@@ -137,7 +170,10 @@ class IQSConnectorWidget:
             address=self.address_field.value,
             user=self.user_field.value,
             password=self.password_field.value,
-            token=self.token,
-            auth_with_user_pw=self.ask_for_user_pw,
-            use_oidc=self.oicd_checkbox.value
+            token=self.token_field.value,
+            auth_with_user_pw=self.ask_for_user_pw_checkbox.value,
+            use_oidc=self.oidc_checkbox.value,
+            use_auth_header=self.auth_header_checkbox.value,
+            auth_header_name=self.auth_header_name_field.value,
+            auth_header_value=self.auth_header_value_field.value
         )
