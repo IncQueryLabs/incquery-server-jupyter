@@ -25,6 +25,9 @@ default_use_oidc: bool = False
 default_use_password: bool = True
 default_use_auth_header: bool = False
 
+default_analysis_config = None
+default_model_viewer_address = None
+
 default_IQS_address  : str = None
 default_IQS_username : str = None
 default_IQS_password : str = None
