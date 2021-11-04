@@ -22,6 +22,8 @@ import iqs_jupyter.tool_extension_point as ext_point
 from iqs_jupyter import api_composition
 from iqs_client_extension import ApiClientWithOIDC
 
+import requests
+
 
 def connect(
         address=defaults.default_IQS_address,
@@ -57,8 +59,6 @@ def connect(
         configuration.access_token = token
 
     return IQSClient(configuration, use_oidc)
-
-import requests
 
 class IQSClient:
     def __init__(
