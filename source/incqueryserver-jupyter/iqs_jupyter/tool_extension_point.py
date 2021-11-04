@@ -37,3 +37,16 @@ element_dict_recognizers : List[Callable[[dict], Optional[Any]]] = []
 
 url_providers: List[Callable[[Any], Optional[Any]]] = []
 
+class ModelViewerUrlProvider:
+    def __init__(self, iqs, mv_address=None):
+        self.mv_address = mv_address
+        self.iqs = iqs
+
+    def __call__(self, element):
+        if "compartmentURI" in element and "relativeElementID" in element:
+            # Creating ModelViewer Link
+            compURI = element['compartmentURI']
+            relElementID = element['relativeElementID']
+            return f"{self.mv_address}?compartmentURI={compURI}&elementId={relElementID}"
+        else:
+            return None

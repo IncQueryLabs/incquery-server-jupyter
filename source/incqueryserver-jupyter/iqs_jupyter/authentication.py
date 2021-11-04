@@ -56,42 +56,12 @@ class IQSClient:
         self.jupyter_tools = ext_point.IQSJupyterTools(self)
 
         # Acquiring Model Viewer base link from host through internal API
-        req = requests.get(f"http://{root_configuration.host}/api/web-console-config")
+        req = requests.get(f"http://{root_configuration.host}/internal-api/solution-configuration")
 
-        # Creating ModelViwer url holder to persist link
-        self.mv_url = ModelViewerUrlProvider(self, req.json()["modelViewerBaseURL"])
+        # Registering MV URL provider, providing links to MV link received from API call above
+        ext_point.url_providers.append(ext_point.ModelViewerUrlProvider(self, req.json()["modelViewerBaseURL"]))
 
-        # Url provider registering, a function to provide Model Viewer links
-        ext_point.url_providers.append(self.mv_url.as_url_provider())
-        ext_point.url_providers.append(ModelViewerUrlProvider(self, req.json()["modelViewerBaseURL"]))
 
-class ModelViewerUrlProvider:
-    def __init__(self, iqs, mv_address=None):
-        self.mv_address = mv_address
-        self.iqs = iqs
-
-    def __call__(self, element):
-        if "compartmentURI" in element and "relativeElementID" in element:
-            # Creating ModelViewer Link
-            compURI = element['compartmentURI']
-            relElementID = element['relativeElementID']
-            return f"{self.mv_address}?compartmentURI={compURI}&elementId={relElementID}"
-        else:
-            return None
-
-    def as_url_provider(self):
-        def url_provider(element_descriptor):
-            return self.element_api_link(element_descriptor)
-        return url_provider
-
-    def element_api_link(self, element):
-        if "compartmentURI" in element and "relativeElementID" in element:
-            # Creating ModelViewer Link
-            compURI = element['compartmentURI']
-            relElementID = element['relativeElementID']
-            return f"{self.mv_address}?compartmentURI={compURI}&elementId={relElementID}"
-        else:
-            return None
 
 class IQSConnectorWidget:
     def __init__(
