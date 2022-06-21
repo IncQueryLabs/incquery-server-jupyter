@@ -19,7 +19,7 @@ Created on 2019. nov. 26.
 
 import html
 
-import iqs_client
+from iqs_client import models as iqs_client
 from iqs_jupyter.helpers import cell_to_html as _cell_to_html
 from iqs_jupyter.helpers import dict_to_element as _dict_to_element
 from iqs_jupyter.core_extensions import validation_color_scale

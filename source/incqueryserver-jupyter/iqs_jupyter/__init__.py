@@ -30,18 +30,15 @@ from iqs_jupyter.about import __version__
 from iqs_jupyter.core_extensions import *
 from iqs_jupyter.authentication import *
 
-if 'MmsRepositoryApi' in dir(iqs_client):
-    from iqs_jupyter.mms_extensions import *
-    from iqs_jupyter.mms_direct_extensions import *
+#if 'MmsRepositoryApi' in dir(iqs_client):
+from iqs_jupyter.mms_extensions import *
+from iqs_jupyter.mms_direct_extensions import *
     
-if 'RepositoryApi' in dir(iqs_client):
-    from iqs_jupyter.twc_extensions import *
-    from iqs_jupyter.twc_osmc_extensions import *
+#if 'RepositoryApi' in dir(iqs_client):
+from iqs_jupyter.twc_extensions import *
+from iqs_jupyter.twc_osmc_extensions import *
 
-if 'AnalysisApi' in dir(iqs_client):
-    from iqs_jupyter.analysis_extensions import *
-
-# namespace shortcut for API request/response classes
-from iqs_client import models as schema
+#if 'AnalysisApi' in dir(iqs_client):
+from iqs_jupyter.analysis_extensions import *
 
 

@@ -21,7 +21,7 @@ Created on 2019. máj. 24.
 import ipywidgets as widgets
 from IPython.display import display
 
-import iqs_client
+from iqs_client import models as iqs_client
 
 import iqs_jupyter.config_defaults as defaults
 import iqs_jupyter.tool_extension_point as ext_point

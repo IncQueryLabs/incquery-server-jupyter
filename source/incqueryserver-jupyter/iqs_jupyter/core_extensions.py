@@ -22,7 +22,7 @@ import collections
 import html
 from typing import Optional
 
-import iqs_client
+from iqs_client import models as iqs_client
 
 import iqs_jupyter.tool_extension_point as ext_point
 from iqs_jupyter.helpers import cell_to_html as _cell_to_html
