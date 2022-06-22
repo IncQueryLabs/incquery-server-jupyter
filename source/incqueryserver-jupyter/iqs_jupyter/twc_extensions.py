@@ -22,7 +22,7 @@ from typing import Optional
 import ipywidgets as widgets
 from IPython.display import display
 
-from iqs_client import models as iqs_client
+from iqs_client.models import RevisionDescriptor, ElementDescriptor, ListDependenciesResponse, ModelCompartment
 
 import iqs_jupyter.config_defaults as defaults
 import iqs_jupyter.tool_extension_point as ext_point
@@ -55,7 +55,7 @@ class TWCRevisionInputWidget:
         self.display()    
         
     def value(self):
-        return iqs_client.RevisionDescriptor(
+        return RevisionDescriptor(
             revision_number = self.revision_widget.value,
             branch_id       = self.branch_widget.value,
             resource_id     = self.resource_widget.value,
@@ -237,7 +237,7 @@ class TWCRevisionSelectorWidget:
             self.resource_widget.index  != 0 and 
             self.workspace_widget.index != 0 
         ):
-            return iqs_client.RevisionDescriptor(
+            return RevisionDescriptor(
                 revision_number = self.revision_widget.value,
                 branch_id       = self.branch_widget.value,
                 resource_id     = self.resource_widget.value,
@@ -250,12 +250,12 @@ class TWCRevisionSelectorWidget:
 
 # recognizing element descriptors in match results
 
-def _recognize_element_descriptor(dict_of_element : dict) -> Optional[iqs_client.ElementDescriptor]:
+def _recognize_element_descriptor(dict_of_element : dict) -> Optional[ElementDescriptor]:
     if "workspaceId" in dict_of_element:
-        return iqs_client.ElementDescriptor(
+        return ElementDescriptor(
             **dict(
                 (py_name, dict_of_element[json_name]) 
-                for py_name, json_name in iqs_client.ElementDescriptor.attribute_map.items()
+                for py_name, json_name in ElementDescriptor.attribute_map.items()
             )
         )
     else:
@@ -326,7 +326,7 @@ def _monkey_patch_list_dependencies_response_repr_html(self):
     )
 
 def _monkey_patch_element_descriptor_resolve_reference(self, target_element_id):
-    return iqs_client.ElementDescriptor(
+    return ElementDescriptor(
         revision_number = self.revision_number,
         branch_id       = self.branch_id,
         resource_id     = self.resource_id,
@@ -335,7 +335,7 @@ def _monkey_patch_element_descriptor_resolve_reference(self, target_element_id):
     )
     
 def _monkey_patch_element_descriptor_get_containing_revision(self):
-    return iqs_client.RevisionDescriptor(
+    return RevisionDescriptor(
         revision_number = self.revision_number,
         branch_id       = self.branch_id,
         resource_id     = self.resource_id,
@@ -343,7 +343,7 @@ def _monkey_patch_element_descriptor_get_containing_revision(self):
     )
     
 def _monkey_patch_revision_descriptor_get_element_descriptor_by_id(self, element_id):
-    return iqs_client.ElementDescriptor(
+    return ElementDescriptor(
         revision_number = self.revision_number,
         branch_id       = self.branch_id,
         resource_id     = self.resource_id,
@@ -358,21 +358,21 @@ def _monkey_patch_revision_descriptor_to_compartment_uri(self):
 
 
 def _monkey_patch_revision_descriptor_to_model_compartment(self):
-    return iqs_client.ModelCompartment(compartment_uri=self.to_compartment_uri())
+    return ModelCompartment(compartment_uri=self.to_compartment_uri())
 
 def _monkey_patch_jupytertools_twc_revision_selector_widget(self, **kwargs):
     return TWCRevisionSelectorWidget(iqs=self._iqs, **kwargs)
 
 def _do_monkey_patching():
-    iqs_client.ElementDescriptor.to_str = _monkey_patch_element_descriptor_to_str
-    iqs_client.ElementDescriptor.to_descriptor_str = _monkey_patch_element_descriptor_to_descriptor_str
-    iqs_client.ElementDescriptor._repr_html_ = _monkey_patch_element_descriptor_repr_html
-    iqs_client.ElementDescriptor.resolve_reference = _monkey_patch_element_descriptor_resolve_reference
-    iqs_client.ElementDescriptor.get_containing_revision = _monkey_patch_element_descriptor_get_containing_revision
-    iqs_client.RevisionDescriptor.get_element_descriptor_by_id = _monkey_patch_revision_descriptor_get_element_descriptor_by_id
-    iqs_client.RevisionDescriptor.to_compartment_uri = _monkey_patch_revision_descriptor_to_compartment_uri
-    iqs_client.RevisionDescriptor.to_model_compartment = _monkey_patch_revision_descriptor_to_model_compartment
-    iqs_client.ListDependenciesResponse._repr_html_ = _monkey_patch_list_dependencies_response_repr_html
+    ElementDescriptor.to_str = _monkey_patch_element_descriptor_to_str
+    ElementDescriptor.to_descriptor_str = _monkey_patch_element_descriptor_to_descriptor_str
+    ElementDescriptor._repr_html_ = _monkey_patch_element_descriptor_repr_html
+    ElementDescriptor.resolve_reference = _monkey_patch_element_descriptor_resolve_reference
+    ElementDescriptor.get_containing_revision = _monkey_patch_element_descriptor_get_containing_revision
+    RevisionDescriptor.get_element_descriptor_by_id = _monkey_patch_revision_descriptor_get_element_descriptor_by_id
+    RevisionDescriptor.to_compartment_uri = _monkey_patch_revision_descriptor_to_compartment_uri
+    RevisionDescriptor.to_model_compartment = _monkey_patch_revision_descriptor_to_model_compartment
+    ListDependenciesResponse._repr_html_ = _monkey_patch_list_dependencies_response_repr_html
     
     ext_point.IQSJupyterTools.twc_revision_selector_widget = _monkey_patch_jupytertools_twc_revision_selector_widget
 

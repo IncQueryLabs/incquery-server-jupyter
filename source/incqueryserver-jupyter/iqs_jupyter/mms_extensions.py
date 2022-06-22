@@ -21,7 +21,7 @@ Created on 2019. máj. 24.
 import ipywidgets as widgets
 from IPython.display import display
 
-from iqs_client import models as iqs_client
+from iqs_client.models import MMSCommitDescriptor, ModelCompartment
 
 import iqs_jupyter.config_defaults as defaults
 import iqs_jupyter.tool_extension_point as ext_point
@@ -212,7 +212,7 @@ class MMCCommitSelectorWidget:
                 self.project_widget.index != 0 and
                 self.org_widget.index != 0
         ):
-            return iqs_client.MMSCommitDescriptor.from_fields(
+            return MMSCommitDescriptor.from_fields(
                 name=self.commit_map[self.commit_widget.value]['name'],
                 commit_id=self.commit_widget.value,
                 ref_id=self.ref_widget.value,
@@ -244,7 +244,7 @@ def _monkey_patch_static_mms_commit_descriptor_from_compartment_uri_or_none(comp
     ):
         return None
     
-    return iqs_client.MMSCommitDescriptor(
+    return MMSCommitDescriptor(
         org_id          = segments[2], 
         project_id      = segments[4], 
         ref_id          = segments[6], 
@@ -267,7 +267,7 @@ def _mms_compartment_uri(org_id, project_id, ref_id, commit_id):
         commit_id
     )
 def _monkey_patch_static_mms_commit_descriptor_from_fields(org_id, project_id, ref_id, commit_id, name = None):
-    return iqs_client.MMSCommitDescriptor(
+    return MMSCommitDescriptor(
         name=name,
         commit_id=commit_id,
         ref_id=ref_id,
@@ -277,17 +277,17 @@ def _monkey_patch_static_mms_commit_descriptor_from_fields(org_id, project_id, r
     )
 
 def _monkey_patch_mms_commit_to_model_compartment(self):
-    return iqs_client.ModelCompartment(compartment_uri=self.to_compartment_uri())
+    return ModelCompartment(compartment_uri=self.to_compartment_uri())
 
 
 def _monkey_patch_jupytertools_mms_commit_selector_widget(self, **kwargs):
     return MMCCommitSelectorWidget(iqs=self._iqs, **kwargs)
 
 def _do_monkey_patching():
-    iqs_client.MMSCommitDescriptor.from_compartment_uri_or_none = staticmethod(_monkey_patch_static_mms_commit_descriptor_from_compartment_uri_or_none)
-    iqs_client.MMSCommitDescriptor.from_fields = staticmethod(_monkey_patch_static_mms_commit_descriptor_from_fields)
-    iqs_client.MMSCommitDescriptor.to_compartment_uri = _monkey_patch_mms_commit_to_compartment_uri
-    iqs_client.MMSCommitDescriptor.to_model_compartment = _monkey_patch_mms_commit_to_model_compartment
+    MMSCommitDescriptor.from_compartment_uri_or_none = staticmethod(_monkey_patch_static_mms_commit_descriptor_from_compartment_uri_or_none)
+    MMSCommitDescriptor.from_fields = staticmethod(_monkey_patch_static_mms_commit_descriptor_from_fields)
+    MMSCommitDescriptor.to_compartment_uri = _monkey_patch_mms_commit_to_compartment_uri
+    MMSCommitDescriptor.to_model_compartment = _monkey_patch_mms_commit_to_model_compartment
     
     ext_point.IQSJupyterTools.mms_commit_selector_widget = _monkey_patch_jupytertools_mms_commit_selector_widget
 

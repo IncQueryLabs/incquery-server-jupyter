@@ -22,7 +22,17 @@ import collections
 import html
 from typing import Optional
 
-from iqs_client import models as iqs_client
+from iqs_client.models import ElementInCompartmentDescriptor,\
+    TypedElementInCompartmentDescriptor,\
+    QueryExecutionResponse,\
+    ModelCompartment,\
+    IndexMessage,\
+    SimpleMessage,\
+    QueryFQNList, \
+    GenericValidationResults,\
+    GenericValidationRule, \
+    ValidationDiagnostics
+
 
 import iqs_jupyter.tool_extension_point as ext_point
 from iqs_jupyter.helpers import cell_to_html as _cell_to_html
@@ -36,12 +46,12 @@ from iqs_jupyter.helpers import dict_to_element as _dict_to_element
 
 def _recognize_element_in_compartment_descriptor(
         dict_of_element : dict
-) -> Optional[iqs_client.ElementInCompartmentDescriptor]:
+) -> Optional[ElementInCompartmentDescriptor]:
     if "relativeElementID" in dict_of_element:
-        return iqs_client.ElementInCompartmentDescriptor(
+        return ElementInCompartmentDescriptor(
             **dict(
                 (py_name, dict_of_element[json_name]) 
-                for py_name, json_name in iqs_client.ElementInCompartmentDescriptor.attribute_map.items()
+                for py_name, json_name in ElementInCompartmentDescriptor.attribute_map.items()
             )
         )
     else:
@@ -52,16 +62,16 @@ ext_point.element_dict_recognizers.append(_recognize_element_in_compartment_desc
 
 def _recognize_typed_element_in_compartment_descriptor(
         dict_of_element : dict
-) -> Optional[iqs_client.TypedElementInCompartmentDescriptor]:
+) -> Optional[TypedElementInCompartmentDescriptor]:
     if "element" in dict_of_element:
-        return iqs_client.TypedElementInCompartmentDescriptor(
+        return TypedElementInCompartmentDescriptor(
             **dict(
                 (
                     py_name, 
                     _recognize_element_in_compartment_descriptor(dict_of_element[json_name]) 
                         if py_name == "element" else dict_of_element[json_name]
                 ) 
-                for py_name, json_name in iqs_client.TypedElementInCompartmentDescriptor.attribute_map.items()
+                for py_name, json_name in TypedElementInCompartmentDescriptor.attribute_map.items()
             )
         )
     else:
@@ -85,13 +95,13 @@ def _monkey_patch_element_in_compartment_descriptor_repr_html(self):
 
 
 def _monkey_patch_element_in_compartment_descriptor_resolve_reference(self, target_element_relative_id):
-    return iqs_client.ElementInCompartmentDescriptor(
+    return ElementInCompartmentDescriptor(
         compartment_uri     = self.compartment_uri,
         relative_element_id = target_element_relative_id
     )
 
 def _monkey_patch_model_compartment_get_element_in_compartment_by_id(self, relative_element_id):
-    return iqs_client.ElementInCompartmentDescriptor(
+    return ElementInCompartmentDescriptor(
         compartment_uri=self.compartment_uri,
         relative_element_id=relative_element_id
     )
@@ -292,27 +302,27 @@ def _monkey_patch_query_execution_response_to_html(self):
         
 
 def _do_monkey_patching():
-    iqs_client.ElementInCompartmentDescriptor._repr_html_ = _monkey_patch_element_in_compartment_descriptor_repr_html
-    iqs_client.ElementInCompartmentDescriptor.resolve_reference = _monkey_patch_element_in_compartment_descriptor_resolve_reference
+    ElementInCompartmentDescriptor._repr_html_ = _monkey_patch_element_in_compartment_descriptor_repr_html
+    ElementInCompartmentDescriptor.resolve_reference = _monkey_patch_element_in_compartment_descriptor_resolve_reference
 
-    iqs_client.ModelCompartment.get_element_in_compartment_by_id = _monkey_patch_model_compartment_get_element_in_compartment_by_id
-    iqs_client.ModelCompartment.is_loaded_by_server = _monkey_patch_model_compartment_is_loaded_by_server
+    ModelCompartment.get_element_in_compartment_by_id = _monkey_patch_model_compartment_get_element_in_compartment_by_id
+    ModelCompartment.is_loaded_by_server = _monkey_patch_model_compartment_is_loaded_by_server
     
-    iqs_client.QueryExecutionResponse.to_list_of_matches = _monkey_patch_query_execution_response_to_list_of_matches
-    iqs_client.QueryExecutionResponse.to_data_frame = _monkey_patch_query_execution_response_to_data_frame
-    iqs_client.QueryExecutionResponse.to_data_frame = _monkey_patch_query_execution_response_to_data_frame
-    iqs_client.QueryExecutionResponse._repr_html_ = _monkey_patch_query_execution_response_to_html  
-    iqs_client.IndexMessage._repr_html_ = _monkey_patch_generic_response_message_repr_html_
-    iqs_client.SimpleMessage._repr_html_ = _monkey_patch_generic_response_message_repr_html_
-    iqs_client.QueryFQNList._repr_html_ = _monkey_patch_query_fqn_list_repr_html_
+    QueryExecutionResponse.to_list_of_matches = _monkey_patch_query_execution_response_to_list_of_matches
+    QueryExecutionResponse.to_data_frame = _monkey_patch_query_execution_response_to_data_frame
+    QueryExecutionResponse.to_data_frame = _monkey_patch_query_execution_response_to_data_frame
+    QueryExecutionResponse._repr_html_ = _monkey_patch_query_execution_response_to_html  
+    IndexMessage._repr_html_ = _monkey_patch_generic_response_message_repr_html_
+    SimpleMessage._repr_html_ = _monkey_patch_generic_response_message_repr_html_
+    QueryFQNList._repr_html_ = _monkey_patch_query_fqn_list_repr_html_
     
     # TODO TWC-specific version missing, as well as additional features
-    iqs_client.GenericValidationResults.to_list_of_diagnostic_items = _monkey_patch_generic_validation_results_to_list_of_diagnostic_items
-    iqs_client.GenericValidationResults.to_data_frame = _monkey_patch_generic_validation_results_to_data_frame
-    iqs_client.GenericValidationResults._repr_html_ = _monkey_patch_generic_validation_results_repr_html
-    iqs_client.GenericValidationRule._repr_html_ = _monkey_patch_generic_validation_rule_repr_html
-    iqs_client.ValidationDiagnostics._repr_html_ = _monkey_patch_validation_diagnostics_reps_html
-    iqs_client.TypedElementInCompartmentDescriptor._repr_html_ = _monkey_patch_typed_element_in_compartment_repr_html
+    GenericValidationResults.to_list_of_diagnostic_items = _monkey_patch_generic_validation_results_to_list_of_diagnostic_items
+    GenericValidationResults.to_data_frame = _monkey_patch_generic_validation_results_to_data_frame
+    GenericValidationResults._repr_html_ = _monkey_patch_generic_validation_results_repr_html
+    GenericValidationRule._repr_html_ = _monkey_patch_generic_validation_rule_repr_html
+    ValidationDiagnostics._repr_html_ = _monkey_patch_validation_diagnostics_reps_html
+    TypedElementInCompartmentDescriptor._repr_html_ = _monkey_patch_typed_element_in_compartment_repr_html
 
 _do_monkey_patching()
 
