@@ -25,6 +25,7 @@ Created on 2019-05-17
 
 # coding: utf-8
 from iqs_jupyter.about import __version__
+from iqs_client import models as schema
 
 # end-user modules
 from iqs_jupyter.core_extensions import *

@@ -19,14 +19,14 @@ Created on 2019. nov. 26.
 
 import html
 
-from iqs_client.models import AnalysisResults, AnalysisResult
+from iqs_client import models as schema
 
 from iqs_jupyter.helpers import cell_to_html as _cell_to_html
 from iqs_jupyter.helpers import dict_to_element as _dict_to_element
 from iqs_jupyter.core_extensions import validation_color_scale
 
 
-def _monkey_patch_analysis_results_repr_html(self: AnalysisResults):
+def _monkey_patch_analysis_results_repr_html(self: schema.AnalysisResults):
     escaped_id = html.escape(self.configuration.configuration_id)
     header_report = '''
         <h3>Results for model analysis <b>"{}"</b></h3>
@@ -104,7 +104,7 @@ def _monkey_patch_analysis_results_repr_html(self: AnalysisResults):
     '''.format(header_report, style, kpi_report, toc_report, individual_result_tables)
 
 
-def _marker_count_report(analysis_result : AnalysisResult) -> str:
+def _marker_count_report(analysis_result : schema.AnalysisResult) -> str:
     marker_color = validation_color_scale.get(analysis_result.configuration_rule.severity.lower(), None)
     marker_style_string = 'style="background-color:{}; color: bisque;"'.format(marker_color) if marker_color else ""
     return '{} <span {}>{}</span> marker{}'.format(
@@ -114,7 +114,7 @@ def _marker_count_report(analysis_result : AnalysisResult) -> str:
         "s" if 1 != len(analysis_result.matches) else ""
     )
 
-def _monkey_patch_analysis_result_repr_html(self : AnalysisResult, heading_lvl: str = 'h4', anchor : str = None):
+def _monkey_patch_analysis_result_repr_html(self : schema.AnalysisResult, heading_lvl: str = 'h4', anchor : str = None):
     anchor_tag = '<a name="{}"/>'.format(anchor) if anchor else ""
     anchor_href = '<a href="#{}">#</a> '.format(anchor) if anchor else ""
     subheader_report = '{}<span title="{}">{} via "{}" <i>(see hover for details)</i></span>'.format(
@@ -174,7 +174,7 @@ def _monkey_patch_analysis_result_repr_html(self : AnalysisResult, heading_lvl: 
 
 
 def _do_monkey_patching():
-    AnalysisResults._repr_html_ = _monkey_patch_analysis_results_repr_html
-    AnalysisResult._repr_html_ = _monkey_patch_analysis_result_repr_html
+    schema.AnalysisResults._repr_html_ = _monkey_patch_analysis_results_repr_html
+    schema.AnalysisResult._repr_html_ = _monkey_patch_analysis_result_repr_html
 
 _do_monkey_patching()
