@@ -224,7 +224,7 @@ def _monkey_patch_generic_response_message_repr_html_(self):
     return '<span title="{}">{} <i>(see hover for details)</i></span>'.format(html.escape(self.to_str()), html.escape(self.message))
 
 def _monkey_patch_query_fqn_list_repr_html_(self):
-    ns_list = self.query_fq_ns
+    ns_list = self.query_fqns
     if ns_list:
         list_body = "\n".join([
             "<li>{}</li>".format(html.escape(query_fqn)) for query_fqn in ns_list
